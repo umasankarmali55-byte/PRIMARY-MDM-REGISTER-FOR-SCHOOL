@@ -1,0 +1,8 @@
+{
+  "name": "MDM Rice Stock Register",
+  "description": "Modern Mid-Day Meal (MDM) Odisha register suite featuring Master Attendance, Primary & Upper Primary meal logs, Millet Laddoo calculator, Rice Stock registers, Daily Meal Planner, Abstract Consumption analytics, and PDF/Excel export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MDM Rice Stock Register</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f8f5f0;--card:#fff;--ink:#1d2a24;--mut:#6b6b66;--g:#0e5a3c;--gl:#d7eee2;--o:#f7a03f;--line:#e3ded5;--red:#c62828;--sum:#f0ede7}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181a;--card:#1f2326;--ink:#ece9e2;--mut:#9a9a94;--gl:#1f3b2e;--line:#33393c;--sum:#272c2f;--red:#ef6a6a}}
+:root[data-theme="dark"]{--bg:#15181a;--card:#1f2326;--ink:#ece9e2;--mut:#9a9a94;--gl:#1f3b2e;--line:#33393c;--sum:#272c2f;--red:#ef6a6a}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+header{background:var(--g);color:#fff;text-align:center;padding:28px 16px;border-bottom:5px solid var(--o)}
+header small{letter-spacing:.2em;opacity:.8;font-size:12px}
+header h1{margin:6px 0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(22px,5vw,40px);text-transform:uppercase}
+main{max-width:1000px;margin:auto;padding:16px}
+.card{background:var(--card);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 1px 4px #0002}
+h2{font-family:Georgia,serif;margin:0 0 14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;align-items:end}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+input,select{width:100%;padding:11px;font-size:16px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+input[readonly]{background:var(--sum)}
+button{font-size:15px;padding:11px 18px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.pri{background:var(--g);color:#fff;border:0;font-weight:600}.upd{background:var(--o);color:#1d1d1d;border:0;font-weight:600}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;background:var(--sum);border-radius:10px;padding:14px;margin:14px 0}
+.sum span{color:var(--mut);display:block}.sum b{font-size:18px}
+.err{color:var(--red);margin:8px 0}.hint{font-size:13px;color:var(--mut);margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+.stats .card{margin:0}.stats small{color:var(--mut);letter-spacing:.05em}.stats b{display:block;font-size:26px}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:720px}
+th{background:var(--gl);text-align:left}th,td{padding:9px 10px;border:1px solid var(--line)}td.n{text-align:right}
+td small{display:block;font-size:11px;color:var(--mut)}tfoot td{background:var(--gl);font-weight:700}
+a.e{color:var(--g);cursor:pointer;margin-right:8px;text-decoration:underline}a.d{color:var(--red);cursor:pointer;text-decoration:underline}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+@media print{header~main .card:not(#reg),.stats,.noprint{display:none}body{background:#fff}}
+.tabs{display:flex;gap:8px;overflow-x:auto;background:var(--card);padding:10px 16px}.tabs button{border:0;background:none;font-size:16px;padding:10px 18px;border-radius:10px;white-space:nowrap}.tabs .on{background:var(--gl);color:var(--g);font-weight:600}
+.ci{width:78px;padding:6px;font-size:15px}tr.sun td{background:var(--sum)}input[type=checkbox]{width:20px;height:20px;accent-color:var(--g)}.mt td,.mt th{text-align:center}.mt td:first-child,.mt th:first-child{text-align:left}
+@media print{header~main .reg.card{display:block!important}.tabs{display:none}.ci{border:0;width:60px}}
+.cc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px}
+.plan{background:var(--gl);border-radius:18px;padding:18px 22px;margin-bottom:16px}.plan h2{margin:0 0 4px}.plan p{margin:0;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.tag{font-size:12px;letter-spacing:.15em;color:var(--mut);text-transform:uppercase}
+.bignum{font-size:26px;padding:12px}
+.total{background:var(--g);color:#fff;border-radius:18px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px}.total b{font-size:44px;display:block;font-weight:500}
+.req{display:flex;gap:16px;align-items:center;min-height:100px;margin:0}.req i{font-style:normal;font-size:26px;width:34px;text-align:center}.req small{display:block;color:var(--mut)}.req strong{font-size:28px;font-weight:500;display:block}
+.cost{display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:18px;padding:18px 24px;margin-bottom:12px}.cost b{font-size:34px;color:var(--g);font-weight:500}
+.lnk{background:none;border:0;color:var(--g);padding:10px 0;cursor:pointer}
+.nt td,.nt th{padding:6px;border:0;border-bottom:1px solid var(--line);background:none}.nt input{min-width:70px}
+@media print{#p5 .noprint{display:none}}
+:root{--grid:#0b4a31}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--grid:#6fd3a6}}
+:root[data-theme="dark"]{--grid:#6fd3a6}
+.schl{font-size:clamp(15px,3vw,22px);font-weight:600;margin-top:2px}.by{margin-top:10px;font-size:13px;letter-spacing:.04em;background:#ffffff22;display:inline-block;padding:5px 14px;border-radius:20px}
+table{border-collapse:collapse;border:3px solid var(--grid)}
+th,td{border:2px solid var(--grid)!important}
+th{background:var(--g)!important;color:#fff!important;font-weight:700}
+tbody tr:nth-child(even) td{background:var(--sum)}
+tfoot td{background:var(--gl)!important;font-weight:800;border-top:3px solid var(--grid)!important}
+table,th,td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4 landscape;margin:7mm}
+@media print{
+:root:root:root{--bg:#fff;--card:#fff;--ink:#000;--sum:#f1f1f1;--gl:#d7eee2;--line:#999;--grid:#0b4a31;--mut:#444;padding:0}
+body{background:#fff;font-size:11px}
+header{padding:6px 8px;border-bottom-width:3px}header h1{font-size:20px;margin:2px 0}.schl{font-size:13px}.by{margin-top:4px;padding:2px 10px;font-size:10px;background:none;border:1px solid #fff}header small{font-size:9px}
+main{max-width:none;padding:6px 0}
+.wrap{overflow:visible!important}
+.card,.cc{box-shadow:none;border-radius:0;padding:4px;margin:0 0 6px}
+table{min-width:0!important;width:100%!important;table-layout:auto;font-size:9px;border-width:2px}
+th,td{padding:2px 3px!important;border-width:1.5px!important;word-break:break-word}
+th{font-size:8.5px}
+td small{font-size:7px}
+thead{display:table-header-group}tfoot{display:table-footer-group}tr{page-break-inside:avoid}
+.ci,input{border:0!important;background:none!important;padding:0!important;width:100%!important;min-width:0!important;font-size:9px!important;text-align:right;box-shadow:none}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+h2{font-size:13px;margin:0 0 4px}
+.top{margin-bottom:4px}
+.req{min-height:0}.total b{font-size:24px}.cost b{font-size:20px}
+}
+:root{--gs:#a9bfb3;--alt:#f4f9f6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gs:#4d6b5d;--alt:#222a26}}
+:root[data-theme="dark"]{--gs:#4d6b5d;--alt:#222a26}
+.tabs{gap:10px;padding:14px 16px;background:none}
+.tabs button{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px 20px;font-weight:600;color:var(--ink)}
+.tabs .on{background:var(--g);color:#fff;border-color:var(--g)}
+.eyebrow{color:var(--g);font-weight:700;letter-spacing:.14em;font-size:13px}
+.mtitle{font-family:inherit;font-size:clamp(26px,5vw,44px);margin:4px 0;letter-spacing:-.02em}
+.mhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:8px 0 18px;flex-wrap:wrap}
+.saved{color:var(--mut);font-size:14px}.saved i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#1f9d55;margin-right:8px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:18px}
+.sc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 24px}.sc span{display:block;color:var(--mut)}.sc b{display:block;font-size:40px;margin:10px 0 8px;color:var(--g)}.sc.tint{background:var(--gl)}
+.mtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.mtop h2{font-family:inherit;font-size:24px;margin:0}
+.mtab{border:3px solid var(--gs);width:100%;min-width:640px}
+.mtab th,.mtab td{border:2px solid var(--gs)!important;text-align:center;padding:10px}
+.mtab th{background:var(--sum)!important;color:var(--g)!important;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.mtab tbody tr:nth-child(even) td{background:var(--alt)}
+.mtab tbody tr:hover td{background:var(--gl)}
+.mtab td.dc{font-weight:700}
+.pill{background:var(--sum);border-radius:8px;padding:4px 10px;font-size:14px;display:inline-block}
+.mtab tr.sun td{opacity:.55}
+.mi{width:104px;text-align:center;font-size:16px;padding:10px 8px;background:var(--alt);border-radius:10px}
+.mi::placeholder{color:#9bb0a5;opacity:1}
+.mtab td.tt{font-weight:700;color:var(--g)}.mtab td.tt:empty::before{content:"–";color:var(--mut)}
+.mtab tfoot td{background:var(--gl)!important;font-weight:800;color:var(--g);text-align:center!important;border-top:3px solid var(--g)!important}
+.mfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--mut);font-size:14px;padding:14px 4px 0}
+@media print{:root:root:root{--gs:#a9bfb3;--alt:#f4f9f6}.mtab{min-width:0}.mtab th,.mtab td{padding:3px!important}.mi{width:100%!important}.mfoot{font-size:9px}.mtab tr.sun td{opacity:1}}
+.mdl{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:99;padding:16px}.mbox{background:var(--card);color:var(--ink);border-radius:16px;padding:22px;max-width:400px;width:100%;box-shadow:0 8px 30px #0006}.mbox p{margin:0 0 18px;font-size:17px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;z-index:99;max-width:90%;text-align:center}
+@media print{.mdl,.toast{display:none}}
+.dsh:empty::before{content:"–";color:var(--mut)}
+.mtab input.mi[step]{width:120px}
+.mtab tr.sec td{background:var(--gl)!important;font-weight:800;color:var(--g);text-align:left!important;letter-spacing:.05em}.mtab td.il{text-align:left!important;font-weight:600}
+.tg{padding:7px 16px;border-radius:10px;font-weight:600}
+.scr{border-collapse:collapse;border:3px solid #000;width:100%;min-width:780px}
+.scr th{background:#000!important;color:#fff!important;border:2px solid #000!important;text-align:center;text-transform:uppercase;padding:8px;letter-spacing:0;font-size:13px}
+.scr td{border:2px solid #000!important;text-align:center;padding:6px;font-size:15px;color:#000}
+.scr td.k{background:#000!important;color:#fff;font-weight:600}.scr td.b{background:#96dbf8!important}.scr td.g{background:#8ed973!important}
+.scr input,.scr2 input{width:86px;text-align:center;background:#fff;color:#000;border:1px solid #333;border-radius:6px;padding:5px}
+.scr2{border-collapse:collapse;border:3px solid #000;width:100%;min-width:520px}
+.scr2 th{background:#0070c0!important;color:#fff!important;border:2px solid #000!important;text-align:center;text-transform:uppercase;padding:8px;font-size:13px}
+.scr2 td{border:2px solid #000!important;text-align:center;padding:6px;background:#fff;color:#000;font-weight:600}
+.scr2 td.k2{background:#0070c0!important;color:#fff;text-transform:uppercase}
+.band{background:#0070c0;color:#fff;text-align:center;font-weight:800;padding:14px;margin-top:0;letter-spacing:.03em}
+.mtab tr.tot td{background:var(--gl)!important;font-weight:800;color:var(--g);border-top:3px solid var(--g)!important}
+@media(max-width:700px){
+body{font-size:15px}
+header{padding:14px 10px 12px;border-bottom-width:4px}header h1{font-size:21px;letter-spacing:0;margin:4px 0}header small{font-size:10px}.schl{font-size:14px}#sub{font-size:13px}.by{font-size:11px;padding:4px 10px;line-height:1.3}
+.tabs{position:sticky;top:0;z-index:30;background:var(--bg);padding:8px;gap:8px;border-bottom:1px solid var(--line);box-shadow:0 2px 6px #0002}
+.tabs button{padding:10px 14px;font-size:14px;border-radius:12px;min-height:42px}
+main{padding:10px 8px}
+.card,.cc{padding:12px;border-radius:14px;margin-bottom:12px}
+h2{font-size:18px}.mtitle{font-size:26px}.mhead{margin:2px 0 12px}.eyebrow{font-size:11px}
+.row{grid-template-columns:1fr 1fr;gap:10px}.row>div[style*="span 2"]{grid-column:1/-1!important}
+.sgrid,.stats{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{padding:12px 14px;border-radius:14px}.sc b{font-size:26px;margin:6px 0}.sc span{font-size:13px}.stats b{font-size:20px}
+.total{padding:14px}.total b{font-size:34px}.cost{padding:14px}.cost b{font-size:26px}
+.req{min-height:0;gap:10px}.req strong{font-size:22px}
+button,input,select{min-height:44px}
+.top,.mtop{flex-direction:column;align-items:stretch;gap:10px}
+.top>span,.mtop>div.noprint{display:flex!important;flex-wrap:wrap;gap:8px}
+.top button,.mtop button{flex:1 1 auto}
+[style*="justify-content:flex-end"]{flex-wrap:wrap;justify-content:stretch!important}
+.wrap{-webkit-overflow-scrolling:touch}
+.wrap td:first-child,.wrap th:first-child{position:sticky;left:0;z-index:2;background:var(--card)}
+.mtab{min-width:0}#reg .mtab{min-width:700px}.mtab th,.mtab td{padding:7px 4px!important;font-size:13px}.mtab th{font-size:10px;letter-spacing:0}
+.mtab tr.sun td{opacity:1;color:var(--mut)}
+.mi{width:62px;padding:8px 4px;font-size:15px;min-height:40px;border-radius:8px}#reg .mi{width:84px}
+.pill{font-size:0;padding:3px 8px}.pill::after{content:attr(data-s);font-size:13px}
+.mfoot{font-size:12px}
+.scr input,.scr2 input{width:68px}.scr{min-width:700px}
+.nt td,.nt th{padding:4px}.nt input{min-width:64px}
+.bignum{font-size:22px}
+.mbox{padding:18px}
+}
+@media(max-width:700px){.lg{display:none}.mtab td.dc{white-space:nowrap;font-size:12px}.mtab th,.mtab td{padding:6px 2px!important}.mi{width:52px;padding:8px 2px}#reg .mi{width:84px}.pill::after{font-size:12px}.pill{padding:3px 6px}}
+@media(max-width:700px){
+.scr2,.scr2[style]{min-width:0!important}.scr2 td.k2{font-size:12px;letter-spacing:0}.scr2 th{font-size:11px}
+#reg .mtab{min-width:0}#reg .mi{width:70px}
+#reg .mtab thead th:nth-child(n+3):nth-child(-n+5),#reg .mtab tbody td:nth-child(n+3):nth-child(-n+5){display:none}
+#reg .mtab tfoot td:nth-child(n+2):nth-child(-n+4){display:none}
+}
+@media(max-width:700px){#reg .mtab th{font-size:9px}#reg .mtab td{font-size:12px}#reg .mi{width:60px}#reg .pill::after{font-size:11px}#reg .pill{padding:2px 5px}}
+.seg{display:flex;gap:8px;flex-wrap:wrap}.seg button{flex:1 1 230px;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:700}.seg button.on{background:var(--g);color:#fff;border-color:var(--g)}
+#p1.rm2 .m1{display:none!important}#p1:not(.rm2) .m2{display:none!important}
+.hol{display:block;color:#c0392b;font-weight:700;font-size:10px;line-height:1.15}
+.holr td{background:#fde8e6!important}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .holr td{background:#3a2323!important}}
+.mh{width:130px;text-align:left;font-size:14px}.mtab input:disabled{opacity:.45}
+@media(max-width:700px){.mh{width:100px;font-size:13px}}
+.mi.over{border-color:#c0392b;background:#fde8e6;color:#c0392b}
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script></head><body>
+<header><small>MID-DAY MEAL · ODISHA</small><h1>PRIMARY MDM REGISTER</h1><div id="sch" class="schl">Govt. U.G. High School Malda</div><div id="sub"></div><div class="by">Created by UMA SANKAR MALI, Assistant Teacher, Govt UGHS MALDA</div></header>
+<nav class="tabs noprint"><button id="t6">Master Attendance</button><button id="t2">Sheet 1 · Shishu Batika &amp; Primary</button><button id="t3">Sheet 2 · Upper Primary</button><button id="t4">Sheet 3 · Laddoo calculation</button><button id="t1">Sheet 4 · Rice Register</button><button id="t5">Sheet 5 · MDM Calculator</button><button id="t7">Sheet 6 · Abstract Consumption</button></nav><main><div id="p1">
+<div class="cc noprint"><div style="font-weight:700;margin-bottom:8px">Rice register view</div><div class="seg"><button id="rm1" class="on">Option 1 · Present sheet (combined)</button><button id="rm2">Option 2 · SB + Primary and Upper Primary separately</button></div></div>
+<div class="card noprint"><div class="row">
+<div><label>School name</label><input id="school"></div>
+<div><label>Month</label><select id="mo"></select></div>
+<div><label>Year</label><input id="yr" type="number"></div>
+<div class="m1" style="grid-column:span 2;display:flex;gap:8px;align-items:end"><div style="flex:1"><label>New month opening balance (kg) — actual physical stock on 1st</label><input id="open" type="number" step="0.001"></div><button class="upd" id="updBtn">Update</button></div>
+</div><div class="hint m1">Not carried forward from last month. Enter actual counted stock.</div>
+<div class="hint" style="margin-top:10px">Attendance comes from the Master Attendance sheet. Rice per child (kg) is editable here; clear a box to follow the norms on Sheets 1 and 2 again. Rice received is typed in the table below.</div><div class="row" style="margin-top:6px"><div><label>Rice per child (kg): Shishu Batika</label><input id="r1" type="number" step="0.001"></div><div><label>Primary (1–5)</label><input id="r2" type="number" step="0.001"></div><div><label>Upper Pry (6–8)</label><input id="r3" type="number" step="0.001"></div></div></div>
+
+<details class="card noprint m1"><summary style="cursor:pointer;font-weight:700">Daily entry form (optional)</summary><h2 id="ft" style="margin-top:12px">Daily entry</h2>
+<div class="row"><div><label>Date</label><input id="dt" type="date"></div><div><label>Day</label><input id="day" readonly></div>
+<div><label>Shishu Batika</label><input id="sb" type="number" min="0" placeholder="0"></div>
+<div><label>Primary (1–5)</label><input id="pr" type="number" min="0" placeholder="0"></div>
+<div><label>Upper Pry (6–8)</label><input id="up" type="number" min="0" placeholder="0"></div>
+<div><label>Rice received (kg)</label><input id="rc" type="number" min="0" step="0.001" placeholder="0.000"></div></div>
+<div class="sum"><div><span>Opening</span><b id="po">0.000 kg</b></div><div><span>Consumption</span><b id="pc">0.000 kg</b></div><div><span>Closing</span><b id="pl">0.000 kg</b></div></div>
+<div class="hint" id="lk"></div><div class="err" id="err"></div>
+<button class="pri" id="save">Save entry</button> <button id="cancel" style="display:none">Cancel edit</button> <button id="clrf">↺ Clear form</button></details>
+
+<div class="stats m1"><div class="card"><small>OPENING STOCK</small><b id="s1"></b></div><div class="card"><small>TOTAL RECEIVED</small><b id="s2"></b></div><div class="card"><small>TOTAL CONSUMED</small><b id="s3"></b></div><div class="card"><small>CLOSING BALANCE</small><b id="s4"></b></div></div>
+
+<div class="card m1" id="reg"><div class="top"><h2 id="rt"></h2><button class="noprint" onclick="window.print()">Print</button></div>
+<p class="hint noprint" style="margin:0 0 8px">Attendance comes from the Master Attendance sheet. Type the rice received (kg) in the editable column on the date it arrived; opening, consumption and closing update automatically.</p><div class="wrap"><table class="mtab"><thead><tr><th>Date</th><th>Day</th><th>SB</th><th>Primary</th><th>Upper Pry</th><th>Opening (kg)</th><th>Rice received (kg) ✎</th><th>Consumption (kg)</th><th>Closing (kg)</th></tr></thead><tbody id="tb"></tbody><tfoot id="tf"></tfoot></table></div></div>
+
+<div class="m2">
+<div class="cc noprint"><h2 style="margin:0 0 10px">Opening balance — separate registers</h2><div class="row" style="align-items:end"><div><label>SB + Primary opening balance (kg)</label><input id="sopP" type="number" step="0.001"></div><div><label>Upper Primary opening balance (kg)</label><input id="sopU" type="number" step="0.001"></div><div><button class="upd" id="sUpd">Update</button></div></div><div class="hint">Enter the actual counted stock of each group on the 1st. Attendance comes from the Master Attendance sheet. Type rice received in each group's own register below.</div></div>
+<div class="card reg"><div class="top" data-label="Rice Register Summary"><h2 id="sSt"></h2><button class="noprint" onclick="window.print()">Print</button></div><div class="wrap"><table class="mtab"><thead><tr><th>Group</th><th>Opening (kg)</th><th>Rice received (kg)</th><th>Consumed (kg)</th><th>Closing balance (kg)</th></tr></thead><tbody id="sSum"></tbody></table></div></div>
+<div class="card reg"><div class="top" data-label="Rice Register SB + Primary"><h2 id="sPt"></h2><button class="noprint" onclick="window.print()">Print</button></div><p class="hint noprint" style="margin:0 0 8px"><b>SB + Primary register.</b> Type the rice received (kg) on the date it arrived.</p><div class="wrap"><table class="mtab"><thead><tr><th>Date</th><th>Day</th><th>SB</th><th>Primary</th><th>Opening (kg)</th><th>Rice received (kg) ✎</th><th>Consumption (kg)</th><th>Closing (kg)</th></tr></thead><tbody id="sPb"></tbody><tfoot id="sPf"></tfoot></table></div></div>
+<div class="card reg"><div class="top" data-label="Rice Register Upper Primary"><h2 id="sUt"></h2><button class="noprint" onclick="window.print()">Print</button></div><p class="hint noprint" style="margin:0 0 8px"><b>Upper Primary register.</b> Type the rice received (kg) on the date it arrived.</p><div class="wrap"><table class="mtab"><thead><tr><th>Date</th><th>Day</th><th>Upper Pry</th><th>Opening (kg)</th><th>Rice received (kg) ✎</th><th>Consumption (kg)</th><th>Closing (kg)</th></tr></thead><tbody id="sUb"></tbody><tfoot id="sUf"></tfoot></table></div></div>
+</div>
+
+<div class="card noprint"><h2>How to use</h2><ol><li>Choose month and year, enter the actual rice stock on the 1st, press Update.</li><li>Set rice per child (kg) for each section once.</li><li>Attendance comes from the Master Attendance sheet. Type rice received directly in the Rice received column.</li><li>Opening, consumption and closing are calculated automatically; each day opens with the previous day's closing.</li><li>Data is stored in this browser only. Use Print for the monthly register.</li></ol></div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id),M=["January","February","March","April","May","June","July","August","September","October","November","December"],D=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+let S={school:"Govt. U.G. High School Malda",rates:[.1,.1,.15],months:{}},editing=null;
+try{const x=localStorage.getItem("mdm-rice");if(x)S=JSON.parse(x)}catch(e){}
+const save=()=>{try{localStorage.setItem("mdm-rice",JSON.stringify(S))}catch(e){}};
+const t=new Date(),iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const f3=n=>(+n).toFixed(3),fd=s=>s.split("-").reverse().join("-");
+$("mo").innerHTML=M.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+$("mo").value=t.getMonth();$("yr").value=t.getFullYear();$("dt").value=iso(t);
+const key=()=>$("yr").value+"-"+String(+$("mo").value+1).padStart(2,"0");
+const mon=()=>S.months[key()]||(S.months[key()]={opening:0,entries:[]});
+const rates=()=>{const b=[S.p.norms.rice/1000,S.p.norms.rice/1000,S.u.norms.rice/1000],o=S.rr||[];return b.map((v,i)=>nz(o[i])?+o[i]:v)};
+const nz=v=>v!==""&&v!=null&&!isNaN(+v);
+const pmv=(o,d)=>{const m=o&&o.months&&o.months[d.slice(0,7)];return m&&m[d]||null};
+function link(d){if(!d)return null;const P=pmv(S.p,d),U=pmv(S.u,d),L=pmv(S.l,d);
+ const pick=(...v)=>{for(const x of v)if(nz(x))return +x;return null};
+ const M0=mget(d),sb=pick(M0&&M0.sb,P&&P.sb,L&&L.sb),pr=pick(M0&&M0.ps,P&&P.ps,L&&L.ps),up=pick(M0&&M0.up,U&&U.up,L&&L.ups);
+ if(sb==null&&pr==null&&up==null)return null;return{sb:sb||0,pr:pr||0,up:up||0}}
+const allDays=()=>{const n=new Date(+$("yr").value,+$("mo").value+1,0).getDate();return[...Array(n)].map((_,i)=>key()+"-"+String(i+1).padStart(2,"0"))};
+function calc(){const m=mon(),k=key(),dset=new Set(m.entries.map(e=>e.date));
+ [S.p,S.u,S.l,S.m].forEach(o=>{const mm=o&&o.months&&o.months[k];if(mm)Object.keys(mm).forEach(d=>{if(link(d))dset.add(d)})});
+ const es=allDays(),rt=rates();let bal=+m.opening;
+ return es.map((d,i)=>{const e=m.entries.find(x=>x.date===d),L=link(d),w=new Date(d+"T00:00").getDay(),
+  sb=L?L.sb:(e?+e.sb:0),pr=L?L.pr:(e?+e.pr:0),up=L?L.up:(e?+e.up:0),
+  esb=L&&!S.p.menu[w].rice?0:sb,epr=L&&!S.p.menu[w].rice?0:pr,eup=L&&!S.u.menu[w].rice?0:up,
+  rcv=e?+e.rc:0,o=bal,cp=esb*rt[0]+epr*rt[1],cu=eup*rt[2],c=cp+cu,cl=o+rcv-c;bal=cl;
+  return{date:d,sb,pr,up,rc:rcv,o,c,cp,cu,cl,linked:!!L,manual:!!e,src:i?"Closing of "+fd(es[i-1]):"Month opening stock"}})}
+function syncForm(){const L=link($("dt").value);["sb","pr","up"].forEach((k,i)=>{const el=$(k);if(L){el.value=[L.sb,L.pr,L.up][i];el.readOnly=true}else if(el.readOnly){el.readOnly=false;el.value=""}})}
+function preview(){syncForm();const d=$("dt").value,L=link(d),rows=calc(),prev=rows.filter(r=>r.date<d).pop(),o=prev?prev.cl:+mon().opening,rt=rates();
+ let c;if(L){const r=rows.find(x=>x.date===d);c=r?r.c:0}else c=(+$("sb").value||0)*rt[0]+(+$("pr").value||0)*rt[1]+(+$("up").value||0)*rt[2];
+ const rc=+$("rc").value||0;
+ $("po").textContent=f3(o)+" kg";$("pc").textContent=f3(c)+" kg";$("pl").textContent=f3(o+rc-c)+" kg";
+ $("day").value=d?D[new Date(d+"T00:00").getDay()]:"";
+ $("lk").textContent=L?"Attendance for this date is linked from the MDM pages. Enter only the rice received, if any.":"";
+ const dup=d&&mon().entries.some(e=>e.date===d)&&editing!==d,ok=d&&d.slice(0,7)===key();
+ $("err").textContent=dup?"An entry already exists for this date — use Edit in the register.":(!ok?"Date is outside the selected month.":"");
+ $("save").disabled=dup||!ok;$("save").style.opacity=$("save").disabled?.5:1}
+function render(){const m=mon(),r=calc(),mn=M[+$("mo").value]+" "+$("yr").value;
+ $("sch").textContent=S.school;$("school").value=S.school;$("sub").textContent="MDM Rice Stock Register — "+mn;document.title=S.school+" – MDM Rice Register";
+ $("open").value=m.opening;{const q=rates();[1,2,3].forEach(i=>$("r"+i).value=q[i-1])}
+ $("rt").textContent="Monthly register — "+mn;
+ const days=allDays(),rr=Object.fromEntries(r.map(e=>[e.date,e]));
+ $("tb").innerHTML=days.map(d=>{const e=rr[d],dw=new Date(d+"T00:00").getDay(),v=x=>x?x:"";
+  return `<tr class="${dw?"":"sun"}"><td class="dc">${d.slice(8)+" "+M[+d.slice(5,7)-1].slice(0,3)}${hs(d)}</td><td><span class="pill" data-s="${D[dw].slice(0,3)}">${D[dw]}</span></td><td class="dsh">${v(e.sb)}</td><td class="dsh">${v(e.pr)}</td><td class="dsh">${v(e.up)}</td><td id="o|${d}"></td><td><input class="mi" type="number" min="0" step="0.001" placeholder="–" data-d="${d}" value="${e.rc||""}"></td><td class="dsh" id="c|${d}"></td><td id="l|${d}" style="font-weight:700"></td></tr>`}).join("");
+ upd()}
+function upd(){const m=mon(),r=calc();
+ r.forEach(e=>{$("o|"+e.date).textContent=f3(e.o);$("c|"+e.date).textContent=e.c?f3(e.c):"";$("l|"+e.date).textContent=f3(e.cl)});
+ const sum=k=>r.reduce((a,e)=>a+(+e[k]),0),tc=sum("c"),tr=sum("rc");
+ $("tf").innerHTML=`<tr><td colspan=2>MONTH TOTAL</td><td>${sum("sb")}</td><td>${sum("pr")}</td><td>${sum("up")}</td><td>${f3(m.opening)}</td><td>${f3(tr)}</td><td>${f3(tc)}</td><td>${f3(+m.opening+tr-tc)}</td></tr>`;
+ [[m.opening],[tr],[tc],[+m.opening+tr-tc]].forEach((v,i)=>$("s"+(i+1)).innerHTML=f3(v[0])+" <small>kg</small>");
+ preview()}
+$("tb").oninput=e=>{const i=e.target,d=i.dataset.d;if(!d)return;const m=mon();let en=m.entries.find(x=>x.date===d);
+ if(!en){if(i.value==="")return;en={date:d,sb:0,pr:0,up:0,rc:0};m.entries.push(en)}
+ en.rc=+i.value||0;if(i.value===""&&!(+en.sb||+en.pr||+en.up))m.entries=m.entries.filter(x=>x!==en);save();upd()};
+window.ed=d=>{const e=mon().entries.find(x=>x.date===d)||{sb:"",pr:"",up:"",rc:0};editing=d;$("dt").value=d;$("sb").value=e.sb;$("pr").value=e.pr;$("up").value=e.up;$("rc").value=e.rc||"";$("ft").textContent="Edit entry";$("cancel").style.display="";$("save").textContent="Update entry";scrollTo({top:0,behavior:"smooth"});preview()};
+window.del=async d=>{if(!await ask("Delete the rice entry for "+fd(d)+"?","Yes, delete"))return;const m=mon();m.entries=m.entries.filter(e=>e.date!==d);save();render()};
+function reset(){editing=null;["sb","pr","up","rc"].forEach(i=>$(i).value="");$("ft").textContent="Daily entry";$("cancel").style.display="none";$("save").textContent="Save entry"}
+$("cancel").onclick=()=>{reset();preview()};
+$("clrf").onclick=()=>{reset();const d=iso(t);if(d.slice(0,7)===key())$("dt").value=d;preview()};
+$("save").onclick=()=>{const m=mon(),e={date:$("dt").value,sb:+$("sb").value||0,pr:+$("pr").value||0,up:+$("up").value||0,rc:+$("rc").value||0};
+ m.entries=m.entries.filter(x=>x.date!==(editing||e.date));m.entries.push(e);save();reset();render()};
+$("updBtn").onclick=()=>{mon().opening=+$("open").value||0;save();render()};
+$("school").onchange=()=>{S.school=$("school").value;save();render()};
+[1,2,3].forEach(i=>$("r"+i).onchange=()=>{const v=$("r"+i).value;S.rr=S.rr||[null,null,null];S.rr[i-1]=v===""?null:+v;save();render()});
+$("mo").onchange=$("yr").onchange=()=>{const d=$("dt").value.slice(8)||"01";$("dt").value=key()+"-"+d;reset();render()};
+["dt","sb","pr","up","rc"].forEach(i=>$(i).oninput=preview);
+/* ---- Rice register: option 2 (separate SB + Primary / Upper Primary) ---- */
+const sep=()=>{const m=mon();return m.sep||(m.sep={openP:0,openU:0,rcP:{},rcU:{}})};
+const sepDay=d=>{const dw=new Date(d+"T00:00").getDay();return[`<td class="dc">${d.slice(8)+" "+M[+d.slice(5,7)-1].slice(0,3)}${hs(d)}</td><td><span class="pill" data-s="${D[dw].slice(0,3)}">${D[dw]}</span></td>`,dw]};
+function sepBuild(){const r=calc(),sp=sep(),mn=M[+$("mo").value]+" "+$("yr").value;
+ $("sSt").textContent=$("sPt").textContent=$("sUt").textContent="Monthly register — "+mn;
+ $("sopP").value=sp.openP||"";$("sopU").value=sp.openU||"";
+ const inp=(g,d,v)=>`<td><input class="mi" type="number" min="0" step="0.001" placeholder="–" data-sg="${g}" data-d="${d}" value="${v??""}"></td>`;
+ $("sPb").innerHTML=r.map(e=>{const[h,dw]=sepDay(e.date);return`<tr class="${dw?"":"sun"}">${h}<td class="dsh">${e.sb||""}</td><td class="dsh">${e.pr||""}</td><td id="sPo|${e.date}"></td>${inp("P",e.date,sp.rcP[e.date])}<td class="dsh" id="sPc|${e.date}"></td><td id="sPl|${e.date}" style="font-weight:700"></td></tr>`}).join("");
+ $("sUb").innerHTML=r.map(e=>{const[h,dw]=sepDay(e.date);return`<tr class="${dw?"":"sun"}">${h}<td class="dsh">${e.up||""}</td><td id="sUo|${e.date}"></td>${inp("U",e.date,sp.rcU[e.date])}<td class="dsh" id="sUc|${e.date}"></td><td id="sUl|${e.date}" style="font-weight:700"></td></tr>`}).join("");
+ sepUpd()}
+function sepUpd(){const r=calc(),sp=sep();let bp=+sp.openP||0,bu=+sp.openU||0,rp=0,ru=0,cp=0,cu=0,tsb=0,tpr=0,tup=0;const op=bp,ou=bu;
+ r.forEach(e=>{const a=+sp.rcP[e.date]||0,b=+sp.rcU[e.date]||0,clp=bp+a-e.cp,clu=bu+b-e.cu;
+  $("sPo|"+e.date).textContent=f3(bp);$("sPc|"+e.date).textContent=e.cp?f3(e.cp):"";$("sPl|"+e.date).textContent=f3(clp);
+  $("sUo|"+e.date).textContent=f3(bu);$("sUc|"+e.date).textContent=e.cu?f3(e.cu):"";$("sUl|"+e.date).textContent=f3(clu);
+  bp=clp;bu=clu;rp+=a;ru+=b;cp+=e.cp;cu+=e.cu;tsb+=e.sb;tpr+=e.pr;tup+=e.up});
+ $("sPf").innerHTML=`<tr><td colspan=2>MONTH TOTAL</td><td>${tsb}</td><td>${tpr}</td><td>${f3(op)}</td><td>${f3(rp)}</td><td>${f3(cp)}</td><td>${f3(bp)}</td></tr>`;
+ $("sUf").innerHTML=`<tr><td colspan=2>MONTH TOTAL</td><td>${tup}</td><td>${f3(ou)}</td><td>${f3(ru)}</td><td>${f3(cu)}</td><td>${f3(bu)}</td></tr>`;
+ $("sSum").innerHTML=`<tr><td class="il">SB + Primary</td><td>${f3(op)}</td><td>${f3(rp)}</td><td>${f3(cp)}</td><td><b>${f3(bp)}</b></td></tr><tr><td class="il">Upper Primary</td><td>${f3(ou)}</td><td>${f3(ru)}</td><td>${f3(cu)}</td><td><b>${f3(bu)}</b></td></tr><tr class="tot"><td class="il">BOTH TOGETHER</td><td>${f3(op+ou)}</td><td>${f3(rp+ru)}</td><td>${f3(cp+cu)}</td><td>${f3(bp+bu)}</td></tr>`}
+$("sPb").oninput=$("sUb").oninput=e=>{const i=e.target,g=i.dataset.sg;if(!g)return;const sp=sep(),o=g==="P"?sp.rcP:sp.rcU;if(i.value==="")delete o[i.dataset.d];else o[i.dataset.d]=+i.value;save();sepUpd()};
+$("sopP").oninput=$("sopU").oninput=$("sUpd").onclick=()=>{const sp=sep();sp.openP=+$("sopP").value||0;sp.openU=+$("sopU").value||0;save();sepUpd()};
+function applyMode(){const s2=S.rmode==="s";$("p1").classList.toggle("rm2",s2);$("rm1").classList.toggle("on",!s2);$("rm2").classList.toggle("on",s2);if(s2)sepBuild()}
+$("rm1").onclick=()=>{S.rmode="c";save();applyMode()};$("rm2").onclick=()=>{S.rmode="s";save();applyMode()};
+const _render0=render;render=function(){_render0();applyMode()};
+function ask(msg,ok){return new Promise(r=>{const o=document.createElement("div");o.className="mdl";o.innerHTML='<div class="mbox"><p></p><div style="display:flex;gap:10px;justify-content:flex-end"><button data-n>Cancel</button><button class="pri" data-y></button></div></div>';o.querySelector("p").textContent=msg;o.querySelector("[data-y]").textContent=ok||"Yes";o.onclick=e=>{const y=e.target.dataset.y!=null;if(y||e.target.dataset.n!=null||e.target===o){o.remove();r(y)}};document.body.appendChild(o)})}
+function note(msg){const n=document.createElement("div");n.className="toast";n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),5000)}
+/* ---- MDM pages (Primary, Upper Primary) ---- */
+const MK=["rice","veg","oil","fuel","egg","dal","soya","ladoo"],ML=["Rice","Vegetable","Oil","Fuel Cost","Egg","Dal","Soya","Laddoo"];
+const NF=[["rice","Rice (g/child)"],["veg","Vegetable (g/child)"],["oil","Oil (ml/child)"],["fuel","Fuel cost (₹/child)"],["cond","Condiment cost (₹/child)"],["dal","Dal (g/child)"],["soya","Soya (g/child)"],["egg","Egg (per child)"],["ladoo","Ladoo (per child)"]];
+const CO=[["rice","Rice (kg)",3],["veg","Vegetable & Condiment (kg)",3],["oil","Oil (kg)",3],["fuel","Fuel (₹)",2],["cond","Condiment (₹)",2],["dal","Dal (kg)",3],["soya","Soya (kg)",3],["egg","Egg (pieces)",0],["ladoo","Laddoo (pieces)",0]];
+const fm=(v,d)=>v?(d?v.toFixed(d):String(Math.round(v*100)/100)):"";
+S.m=S.m||{months:{}};
+const mget=d=>{const m=S.m.months[d.slice(0,7)],r=m&&m[d];if(!r)return null;return r.h?{sb:0,ps:0,up:0,h:r.h}:r};
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hs=d=>{const m=mget(d);return m&&m.h?`<small class="hol">${esc(m.h)}</small>`:""};
+const splitTotal=(T,w)=>{const W=w.reduce((a,b)=>a+(+b||0),0);if(!W){const q=Math.floor(T/3),r=T-q*3;return[q+(r>0?1:0),q+(r>1?1:0),q]}const raw=w.map(x=>T*(+x||0)/W),fl=raw.map(Math.floor);let r=T-fl.reduce((a,b)=>a+b,0);raw.map((x,i)=>[x-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(r>0){fl[i]++;r--}});return fl};
+const ev=(map,d,f,e)=>{const mv=mget(d),k=map[f];return mv&&nz(mv[k])?mv[k]:e[f]};
+const lk=(map,d,f)=>{const mv=mget(d);return !!(mv&&nz(mv[map[f]]))};
+const mkPage=cfg=>{
+ const id=cfg.id,p=id+"-",E=s=>$(p+s),st=S[cfg.key]=S[cfg.key]||{norms:cfg.norms,menu:null,months:{}},ht=cfg.cols.length>1;
+ if(!st.menu){const on=(...a)=>Object.fromEntries(MK.map(k=>[k,a.includes(k)])),b=["rice","veg","oil","fuel"];st.menu=[on(),on(...b,"egg"),on(...b,"soya","ladoo"),on(...b,"egg"),on(...b,"dal","ladoo"),on(...b,"egg"),on(...b,"soya","ladoo")]}
+ const root=document.createElement("div");root.id=id;root.style.display="none";
+ root.innerHTML=`<div class="card noprint"><div class="row"><div><label>Month</label><select id="${p}mo"></select></div><div><label>Year</label><input id="${p}yr" type="number"></div><div><button id="${p}nbtn">⚙ Norms / Settings</button></div></div></div>
+<div class="card noprint" id="${p}norms" style="display:none"><h2>Editable norms</h2><div class="row" id="${p}nf"></div><h2 style="margin-top:20px">Weekly menu</h2><div class="wrap"><table class="mt" id="${p}mt" style="min-width:600px"></table></div><div class="hint">Changes save on this device and update the register immediately. Condiment cost defaults to 0 until you enter your norm.</div></div>
+<div class="stats"><div class="card"><small>CALENDAR DAYS</small><b id="${p}s1"></b></div><div class="card"><small>TOTAL COUNT</small><b id="${p}s2"></b></div><div class="card"><small>MEALS SERVED</small><b id="${p}s3"></b></div><div class="card"><small>TOTAL COST (₹)</small><b id="${p}s4"></b></div></div>
+<div class="card reg"><div class="top"><h2 id="${p}rt"></h2><button class="noprint" onclick="window.print()">Print</button></div><p class="hint noprint" style="margin:0 0 8px">Shaded attendance cells are filled from the Master Attendance sheet. Enter attendance there.</p><div class="wrap"><table style="min-width:${cfg.w}px"><thead id="${p}h"></thead><tbody id="${p}tb"></tbody><tfoot id="${p}tf"></tfoot></table></div></div>`;
+ document.querySelector("main").appendChild(root);
+ const mo=E("mo"),yr=E("yr");mo.innerHTML=$("mo").innerHTML;mo.value=t.getMonth();yr.value=t.getFullYear();
+ const key=()=>yr.value+"-"+String(+mo.value+1).padStart(2,"0"),dim=()=>new Date(+yr.value,+mo.value+1,0).getDate(),ds=d=>key()+"-"+String(d).padStart(2,"0"),pm=()=>st.months[key()]||(st.months[key()]={});
+ const MFM=cfg.mf;const rc=(date,E0)=>{const e=E0||pm()[date]||{},c=cfg.cols.map(x=>+ev(MFM,date,x[0],e)||0),tot=c.reduce((a,b)=>a+b,0),m=(e.meals===""||e.meals==null)?tot:+e.meals,mn=st.menu[new Date(date+"T00:00").getDay()],n=st.norms,f=(k,v)=>mn[k]?m*v:0;
+  return{c,tot,m,rice:f("rice",n.rice)/1000,veg:f("veg",n.veg)/1000,oil:f("oil",n.oil)/1000,fuel:f("fuel",n.fuel),cond:f("veg",n.cond),dal:f("dal",n.dal)/1000,soya:f("soya",n.soya)/1000,egg:f("egg",n.egg),ladoo:f("ladoo",n.ladoo)}};
+ const refresh=()=>{const n=dim(),mn=M[+mo.value]+" "+yr.value,T={tot:0,m:0,cs:cfg.cols.map(()=>0)};CO.forEach(c=>T[c[0]]=0);
+  for(let d=1;d<=n;d++){const dt=ds(d),r=rc(dt),te=$(p+dt+"|tot");if(te)te.textContent=fm(r.tot,0);$(p+dt+"|mi").placeholder=r.tot||"";
+   T.tot+=r.tot;T.m+=r.m;r.c.forEach((v,i)=>T.cs[i]+=v);CO.forEach(c=>{T[c[0]]+=r[c[0]];$(p+dt+"|"+c[0]).textContent=fm(r[c[0]],c[2])})}
+  E("tf").innerHTML="<tr><td colspan=2>Total</td>"+T.cs.map(v=>`<td class=n>${fm(v,0)}</td>`).join("")+(ht?`<td class=n>${fm(T.tot,0)}</td>`:"")+`<td class=n>${fm(T.m,0)}</td>`+CO.map(c=>`<td class=n>${fm(T[c[0]],c[2])}</td>`).join("")+"</tr>";
+  E("s1").textContent=n;E("s2").textContent=T.tot;E("s3").textContent=T.m;E("s4").textContent=(T.fuel+T.cond).toFixed(2);
+  if(root.style.display!=="none"){$("sub").textContent=cfg.label+" — "+mn;document.title=S.school+" – "+cfg.label}};
+ const table=()=>{const n=dim(),mn=M[+mo.value]+" "+yr.value;E("rt").textContent="Monthly register — "+mn;
+  E("h").innerHTML="<tr><th>Date</th><th>Day Name</th>"+cfg.cols.map(c=>`<th>${c[1]}</th>`).join("")+(ht?"<th>Total</th>":"")+"<th>Consumed (meals)</th>"+CO.map(c=>`<th>${c[1]}</th>`).join("")+"</tr>";
+  let h="";for(let d=1;d<=n;d++){const dt=ds(d),dw=new Date(dt+"T00:00").getDay(),e=pm()[dt]||{};
+   h+=`<tr class="${dw?"":"sun"}"><td>${fd(dt)}${hs(dt)}</td><td>${D[dw]}</td>`+cfg.cols.map(c=>`<td><input class=ci type=number min=0 data-d=${dt} data-f=${c[0]} value="${ev(MFM,dt,c[0],e)??""}"${lk(MFM,dt,c[0])?" readonly":""}></td>`).join("")+(ht?`<td class=n id="${p}${dt}|tot"></td>`:"")+`<td><input class=ci type=number min=0 data-d=${dt} data-f=meals id="${p}${dt}|mi" value="${e.meals??""}"></td>`+CO.map(c=>`<td class=n id="${p}${dt}|${c[0]}"></td>`).join("")+"</tr>"}
+  E("tb").innerHTML=h;refresh()};
+ E("nf").innerHTML=NF.map(x=>`<div><label>${x[1]}</label><input type=number step="any" data-n=${x[0]} value="${st.norms[x[0]]??0}"></div>`).join("");
+ E("nf").onchange=e=>{const k=e.target.dataset.n;if(!k)return;st.norms[k]=+e.target.value||0;save();refresh()};
+ E("mt").innerHTML="<tr><th>Day</th>"+ML.map(x=>`<th>${x}</th>`).join("")+"</tr>"+D.map((d,w)=>`<tr><td>${d}</td>`+MK.map(k=>`<td><input type=checkbox data-w=${w} data-k=${k} ${st.menu[w][k]?"checked":""}></td>`).join("")+"</tr>").join("");
+ E("mt").onchange=e=>{const i=e.target;if(i.dataset.w==null)return;st.menu[i.dataset.w][i.dataset.k]=i.checked;save();refresh()};
+ E("tb").oninput=e=>{const i=e.target;if(!i.dataset.f)return;const m=pm();(m[i.dataset.d]=m[i.dataset.d]||{})[i.dataset.f]=i.value;save();refresh()};
+ mo.onchange=yr.onchange=table;
+ E("nbtn").onclick=()=>{const s=E("norms").style;s.display=s.display==="none"?"":"none"};
+ const days=k=>{const[y,m]=k.split("-").map(Number),n=new Date(y,m,0).getDate(),o=[];for(let d=1;d<=n;d++){const dt=k+"-"+String(d).padStart(2,"0");o.push({dt,w:new Date(dt+"T00:00").getDay(),r:rc(dt,(st.months[k]||{})[dt])})}return o};
+ return{table,rows:days,tot:k=>{const T={tot:0,m:0,budget:0};CO.forEach(c=>T[c[0]]=0);days(k).forEach(x=>{const r=x.r;T.tot+=r.tot;T.m+=r.m;CO.forEach(c=>T[c[0]]+=r[c[0]]);if(r.m>0&&st.menu[x.w].rice)T.budget+=r.m*((S.pm&&+S.pm[cfg.gi?"u":"p"])||((S.c&&S.c.rates&&S.c.rates[x.w])||[])[cfg.gi]||0)});return T}}};
+const PG={2:mkPage({id:"p2",key:"p",label:"Primary MDM",w:1250,gi:0,mf:{sb:"sb",ps:"ps"},cols:[["sb","SB count"],["ps","PS (1–5) count"]],norms:{rice:100,veg:60,oil:5,fuel:.76,cond:0,dal:25,soya:12,egg:1,ladoo:1}}),
+ 3:mkPage({id:"p3",key:"u",label:"Upper Primary MDM",w:1150,gi:1,mf:{up:"up"},cols:[["up","UP count"]],norms:{rice:150,veg:100,oil:7.5,fuel:1,cond:0,dal:30,soya:25,egg:1,ladoo:1}})};
+const mkLadoo=()=>{
+ const p="p4-",E=s=>$(p+s),st=S.l=S.l||{norms:{ragi:12,wheat:12,sesame:1,jaggery:6,ghee:2,gnut:1,card:.04,cost:.26},menu:[false,false,true,false,true,false,true],months:{}};
+ const NL=[["ragi","Ragi flour (g/child)"],["wheat","Wheat flour (g/child)"],["sesame","Sesame (g/child)"],["jaggery","Jaggery/raw sugar (g/child)"],["ghee","Ghee/refined oil (g/child)"],["gnut","Groundnut (g/child)"],["card","Cardamom powder (g/child)"],["cost","Preparation cost (₹/ladoo)"]];
+ const CL=[["ragi","Ragi flour (kg)"],["wheat","Wheat flour (kg)"],["sesame","Sesame (kg)"],["jaggery","Jaggery/raw sugar (kg)"],["ghee","Ghee/refined oil (kg)"],["gnut","Groundnut (kg)"],["card","Cardamom powder (kg)"]];
+ const cols=[["sb","Sishubatika count"],["ps","PS count"],["ups","UPS count"]];
+ const root=document.createElement("div");root.id="p4";root.style.display="none";
+ root.innerHTML=`<div class="card noprint"><div class="row"><div><label>Month</label><select id="${p}mo"></select></div><div><label>Year</label><input id="${p}yr" type="number"></div><div><button id="${p}nbtn">⚙ Norms / Settings</button></div></div></div>
+<div class="card noprint" id="${p}norms" style="display:none"><h2>Norms and weekday menu</h2><div class="row" id="${p}nf"></div><div class="wrap" style="margin-top:16px;max-width:420px"><table class="mt" id="${p}mt"></table></div><div class="hint">Changes save on this device and update the register immediately.</div></div>
+<div class="stats"><div class="card"><small>CALENDAR DAYS</small><b id="${p}s1"></b></div><div class="card"><small>BENEFICIARIES / LADOOS</small><b id="${p}s2"></b></div><div class="card"><small>LADOOS PREPARED</small><b id="${p}s3"></b></div><div class="card"><small>TOTAL COST (₹)</small><b id="${p}s4"></b></div></div>
+<div class="card reg"><div class="top"><h2 id="${p}rt"></h2><button class="noprint" onclick="window.print()">Print</button></div><p class="hint noprint" style="margin:0 0 8px">Shaded attendance cells are filled from the Master Attendance sheet. Enter attendance there.</p><div class="wrap"><table style="min-width:1400px"><thead id="${p}h"></thead><tbody id="${p}tb"></tbody><tfoot id="${p}tf"></tfoot></table></div></div>`;
+ document.querySelector("main").appendChild(root);
+ const mo=E("mo"),yr=E("yr");mo.innerHTML=$("mo").innerHTML;mo.value=t.getMonth();yr.value=t.getFullYear();
+ const key=()=>yr.value+"-"+String(+mo.value+1).padStart(2,"0"),dim=()=>new Date(+yr.value,+mo.value+1,0).getDate(),ds=d=>key()+"-"+String(d).padStart(2,"0"),pm=()=>st.months[key()]||(st.months[key()]={});
+ const MFM={sb:"sb",ps:"ps",ups:"up"};const rc=(date,E0)=>{const e=E0||pm()[date]||{},c=cols.map(x=>+ev(MFM,date,x[0],e)||0),tot=c[0]+c[1]+c[2],q=st.menu[new Date(date+"T00:00").getDay()]?tot:0,n=st.norms,r={c,tot,q,cost:q*n.cost};CL.forEach(x=>r[x[0]]=q*n[x[0]]/1000);return r};
+ const refresh=()=>{const n=dim(),T={tot:0,q:0,cost:0,cs:[0,0,0]};CL.forEach(c=>T[c[0]]=0);
+  for(let d=1;d<=n;d++){const dt=ds(d),r=rc(dt);$(p+dt+"|tot").textContent=fm(r.tot,0);T.tot+=r.tot;T.q+=r.q;T.cost+=r.cost;r.c.forEach((v,i)=>T.cs[i]+=v);
+   CL.forEach(c=>{T[c[0]]+=r[c[0]];$(p+dt+"|"+c[0]).textContent=fm(r[c[0]],3)});$(p+dt+"|cost").textContent=fm(r.cost,3)}
+  E("tf").innerHTML="<tr><td colspan=2>Total</td>"+T.cs.map(v=>`<td class=n>${fm(v,0)}</td>`).join("")+`<td class=n>${fm(T.tot,0)}</td>`+CL.map(c=>`<td class=n>${fm(T[c[0]],3)}</td>`).join("")+`<td class=n>${fm(T.cost,3)}</td></tr>`;
+  E("s1").textContent=n;E("s2").textContent=T.tot;E("s3").textContent=T.q;E("s4").textContent=T.cost.toFixed(3);
+  if(root.style.display!=="none"){$("sub").textContent="Millet Ladoo (Primary) — "+M[+mo.value]+" "+yr.value;document.title=S.school+" – Millet Ladoo"}};
+ const table=()=>{const n=dim();E("rt").textContent="Monthly register — "+M[+mo.value]+" "+yr.value;
+  E("h").innerHTML="<tr><th>Date</th><th>Day Name</th>"+cols.map(c=>`<th>${c[1]}</th>`).join("")+"<th>Total</th>"+CL.map(c=>`<th>${c[1]}</th>`).join("")+"<th>Cost (₹)</th></tr>";
+  let h="";for(let d=1;d<=n;d++){const dt=ds(d),dw=new Date(dt+"T00:00").getDay(),e=pm()[dt]||{};
+   h+=`<tr class="${dw?"":"sun"}"><td>${fd(dt)}${hs(dt)}</td><td>${D[dw]}</td>`+cols.map(c=>`<td><input class=ci type=number min=0 data-d=${dt} data-f=${c[0]} value="${ev(MFM,dt,c[0],e)??""}"${lk(MFM,dt,c[0])?" readonly":""}></td>`).join("")+`<td class=n id="${p}${dt}|tot"></td>`+CL.map(c=>`<td class=n id="${p}${dt}|${c[0]}"></td>`).join("")+`<td class=n id="${p}${dt}|cost"></td></tr>`}
+  E("tb").innerHTML=h;refresh()};
+ E("nf").innerHTML=NL.map(x=>`<div><label>${x[1]}</label><input type=number step="any" data-n=${x[0]} value="${st.norms[x[0]]??0}"></div>`).join("");
+ E("nf").onchange=e=>{const k=e.target.dataset.n;if(!k)return;st.norms[k]=+e.target.value||0;save();refresh()};
+ E("mt").innerHTML="<tr><th>Day</th><th>Laddoo prepared?</th></tr>"+D.map((d,w)=>`<tr><td>${d}</td><td><input type=checkbox data-w=${w} ${st.menu[w]?"checked":""}></td></tr>`).join("");
+ E("mt").onchange=e=>{const i=e.target;if(i.dataset.w==null)return;st.menu[i.dataset.w]=i.checked;save();refresh()};
+ E("tb").oninput=e=>{const i=e.target;if(!i.dataset.f)return;const m=pm();(m[i.dataset.d]=m[i.dataset.d]||{})[i.dataset.f]=i.value;save();refresh()};
+ mo.onchange=yr.onchange=table;
+ E("nbtn").onclick=()=>{const s=E("norms").style;s.display=s.display==="none"?"":"none"};
+ return{table,tot:k=>{const[y,m]=k.split("-").map(Number),n=new Date(y,m,0).getDate(),T={q:0,cost:0};CL.forEach(c=>T[c[0]]=0);
+  for(let d=1;d<=n;d++){const dt=k+"-"+String(d).padStart(2,"0"),r=rc(dt,(st.months[k]||{})[dt]);T.q+=r.q;T.cost+=r.cost;CL.forEach(c=>T[c[0]]+=r[c[0]])}return T}}};
+PG[4]=mkLadoo();
+const mkCalc=()=>{
+ const MC=["rice","veg","oil","fuel","egg","dal","laddoo","soya"],MCL=["Rice","Vegetable","Oil","Fuel cost","Egg","Dal","Laddoo","Soya"];
+ const defM=()=>{const on=(...a)=>Object.fromEntries(MC.map(k=>[k,a.includes(k)])),b=["rice","veg","oil","fuel"];return[on(),on(...b,"egg"),on(...b,"laddoo","soya"),on(...b,"egg"),on(...b,"dal","laddoo"),on(...b,"egg"),on(...b,"laddoo","soya")]};
+ const defN=()=>[{rice:100,veg:60,egg:1,soya:12,dal:25,oil:5,laddoo:1},{rice:150,veg:100,egg:1,soya:25,dal:30,oil:7.5,laddoo:1}];
+ const defR=()=>[[0,0],[11.78,14.58],[10.19,15.08],[11.78,14.58],[11.15,14.53],[11.78,14.58],[10.19,15.08]];
+ const st=S.c=S.c||{counts:[100,100,100,100],norms:defN(),rates:defR(),menus:[defM(),defM()]};
+ S.sx=S.sx||{rice:200};
+ const NRM=m=>m===2?Object.assign({},S.u.norms,{rice:+S.sx.rice||0}):(m?S.u.norms:S.p.norms);
+ const G=[{n:"Primary",t:"Shishu Batika – Class V",s:"Shishu Batika and Classes I–V",m:0,nm:0},{n:"Upper Primary",t:"Classes VI–VIII",s:"Upper primary",m:1,nm:1},{n:"Secondary",t:"Class IX",s:"Secondary · same as upper primary, rice 200 g",m:1,nm:2},{n:"Secondary",t:"Class X",s:"Secondary · same as upper primary, rice 200 g",m:1,nm:2}];
+ const NC=[["rice","Rice (g)"],["veg","Vegetables (g)"],["egg","Eggs"],["soya","Soya (g)"],["dal","Dal (g)"],["oil","Oil (ml)"],["laddoo","Laddoo"]];
+ const root=document.createElement("div");root.id="p5";root.style.display="none";
+ root.innerHTML=`<div class="plan noprint"><h2>Daily meal planner</h2><p>Enter the number of children taking meals to estimate food quantities and cooking cost.</p></div>
+<div class="cc noprint"><div class="row"><div style="grid-column:span 2"><label>School name</label><input id="c-school"></div><div><label>Meal date</label><input id="c-dt" type="date"></div></div></div>
+<div class="top noprint" style="margin:8px 0"><div><h2 style="margin:0">Children taking meals</h2><p class="hint">Enter actual attendance for the day. Cooking cost follows the selected meal date.</p></div><button id="c-tog">Hide norms &amp; costs</button></div>
+<div class="grid2" id="c-cnt" style="margin-bottom:16px"></div>
+<div id="c-set" class="noprint"></div>
+<div class="cost"><div><div>Estimated cooking cost</div><small id="c-rt" style="color:var(--mut)"></small></div><b id="c-cost"></b></div>
+<div class="noprint" style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:20px"><button id="c-clr">↺ Clear counts</button><button class="pri" onclick="window.print()">🖨 Print daily report</button></div>
+<div class="top"><div><h2 id="c-h" style="margin:0"></h2><p class="hint">Only food items selected in the weekly menu for the day are counted. Other items remain blank.</p></div><span class="tag noprint">● Live calculation</span></div>
+<div class="total"><div><div>Total children</div><b id="c-tot"></b></div><div>Across all class groups</div></div>
+<div class="grid2" id="c-res"></div>`;
+ document.querySelector("main").appendChild(root);
+ const E=s=>$("c-"+s),fmt=n=>String(Math.round(n*1000)/1000),inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+ E("dt").value=iso(t);E("school").value=S.school;
+ const dow=()=>new Date((E("dt").value||iso(t))+"T00:00").getDay();
+ const calc=()=>{const w=dow(),r={rice:0,veg:0,oil:0,egg:0,soya:0,dal:0,laddoo:0},cnt=st.counts.map(v=>+v||0);let cost=0,tot=0;
+  G.forEach((g,i)=>{const c=cnt[i],mn=st.menus[g.m][w],n=NRM(g.nm);tot+=c;Object.keys(r).forEach(k=>{if(mn[k])r[k]+=c*n[k]});if(mn.fuel)cost+=c*st.rates[w][g.m]});
+  const day=D[w],kg=v=>v?[fmt(v/1000)+" kg",Math.round(v).toLocaleString("en-IN")+" grams"]:["",""];
+  const cards=[["R","Rice required",...kg(r.rice)],["V","Vegetables",...kg(r.veg)],["E","Eggs",r.egg?fmt(r.egg)+" pieces":"",""],["S","Soya chunks",...kg(r.soya)],["D","Dal required",...kg(r.dal)],["O","Oil required",r.oil?fmt(r.oil)+" ml":"",r.oil?fmt(r.oil/1000)+" litres":""],["L","Laddoo required",r.laddoo?fmt(r.laddoo)+" pieces":"",r.laddoo?"One per student by default":""]];
+  E("res").innerHTML=cards.map(c=>`<div class="cc req"><i>${c[0]}</i><div><small>${c[1]}</small>${c[2]?`<strong>${c[2]}</strong><small>${c[3]}</small>`:""}</div></div>`).join("");
+  E("h").textContent="Daily requirement — "+day;E("tot").textContent=tot;E("cost").textContent=inr(cost);E("rt").textContent="Rates for "+day+", based on your supplied schedule.";
+  if(root.style.display!=="none"){$("sub").textContent="MDM Calculator — "+fd(E("dt").value||iso(t));document.title=S.school+" – MDM Calculator"}};
+ const build=()=>{
+  E("cnt").innerHTML=G.map((g,i)=>`<div class="cc"><span class="tag">${g.n}</span><h3 style="margin:8px 0 2px">${g.t}</h3><p class="hint" style="margin:0 0 14px">${g.s}</p><label>Number of children</label><input class="bignum" type="number" min="0" data-ci="${i}" value="${st.counts[i]}"></div>`).join("");
+  const ui=st.ui=st.ui||{n:true,r:true,m:true};
+  const sec=(id,title,body)=>`<div class="cc"><div class="top" style="margin-bottom:${ui[id]?12:0}px"><h2 style="margin:0">${title}</h2><button class="tg" data-tg="${id}">${ui[id]?"Hide":"Open"}</button></div><div data-body="${id}" ${ui[id]?"":'style="display:none"'}>${body}</div></div>`;
+  const nt=`<p class="hint">Edit food quantities. Class IX and Class X use the same norms as Classes VI–VIII, except rice, which is set separately for them (200 g).</p><div class="wrap"><table class="nt"><thead><tr><th>Group</th>${NC.map(c=>`<th>${c[1]}</th>`).join("")}</tr></thead><tbody>${["Shishu Batika–V","VI–VIII","IX–X (Secondary)"].map((n,m)=>`<tr><td>${n}</td>${NC.map(c=>`<td><input type="number" step="any" data-nm="${m}" data-nk="${c[0]}" value="${NRM(m)[c[0]]}"${m===2&&c[0]!=="rice"?" readonly":""}></td>`).join("")}</tr>`).join("")}</tbody></table></div><button class="lnk" data-rn="1">Restore default food norms</button>`;
+  const rt=`<p class="hint">Edit the amount per student for each day. The calculator updates automatically for the selected meal date. Rates are saved in this browser on this device.</p><div class="wrap"><table class="nt"><thead><tr><th>Day</th><th>Primary (₹ per student)</th><th>Upper Primary / Classes VI–X (₹ per student)</th></tr></thead><tbody>${[1,2,3,4,5,6,0].map(w=>`<tr><td>${D[w]}</td>${[0,1].map(g=>`<td><input type="number" step="any" data-rw="${w}" data-rg="${g}" value="${st.rates[w][g]}"></td>`).join("")}</tr>`).join("")}</tbody></table></div><button class="lnk" data-rr="1">Restore default weekday cost rates</button>`;
+  const mn=[["Shishu Batika + Primary (Class I–V)","primary"],["Upper Primary + Secondary (Classes VI–X)","upper-stage"]].map((x,m)=>`<div class="cc" style="box-shadow:none"><h3 style="margin:0 0 4px">${x[0]}</h3><p class="hint">Menu configured for each weekday. Changes are saved on this device.</p><div class="wrap"><table class="mt" style="min-width:600px"><tr><th>Day</th>${MCL.map(l=>`<th>${l}</th>`).join("")}</tr>${D.map((d,w)=>`<tr><td>${d}</td>${MC.map(k=>`<td><input type="checkbox" data-mm="${m}" data-mw="${w}" data-mk="${k}" ${st.menus[m][w][k]?"checked":""}></td>`).join("")}</tr>`).join("")}</table></div><button class="lnk" data-rm="${m}">Restore default ${x[1]} menu</button></div>`).join("");
+  E("set").innerHTML=sec("n","Per-child food norms",nt)+sec("r","Weekday-wise cooking cost rates",rt)+sec("m","Weekly MDM menu",mn)};
+ root.addEventListener("input",e=>{const i=e.target,d=i.dataset;
+  if(d.ci!=null)st.counts[d.ci]=i.value;else if(d.nm!=null){if(+d.nm===2)S.sx.rice=+i.value||0;else NRM(+d.nm)[d.nk]=+i.value||0}else if(d.rw!=null)st.rates[d.rw][d.rg]=+i.value||0;else if(i.id==="c-school"){S.school=i.value;$("school").value=i.value;$("sch").textContent=i.value}else if(i.id!=="c-dt")return;
+  save();calc()});
+ root.addEventListener("change",e=>{const i=e.target,d=i.dataset;if(d.mm!=null){st.menus[d.mm][d.mw][d.mk]=i.checked;save();calc()}else if(i.id==="c-dt")calc()});
+ root.addEventListener("click",e=>{const d=e.target.dataset;if(d.rm!=null)st.menus[d.rm]=defM();else if(d.rn){Object.assign(NRM(0),defN()[0]);Object.assign(NRM(1),defN()[1]);S.sx.rice=200}else if(d.rr)st.rates=defR();else if(d.tg){const bd=root.querySelector('[data-body="'+d.tg+'"]');st.ui[d.tg]=!st.ui[d.tg];bd.style.display=st.ui[d.tg]?"":"none";e.target.textContent=st.ui[d.tg]?"Hide":"Open";e.target.parentElement.style.marginBottom=(st.ui[d.tg]?12:0)+"px";save();return}else return;save();build();calc()});
+ E("clr").onclick=()=>{st.counts=["","","",""];save();build();calc()};
+ E("tog").onclick=()=>{const s=E("set").style,h=s.display==="none";s.display=h?"":"none";E("tog").textContent=h?"Hide norms & costs":"Show norms & costs"};
+ build();return{table:()=>{E("school").value=S.school;calc()}}};
+const mkMaster=()=>{
+ const st=S.m,p="p6-",E=s=>$(p+s),F=["sb","ps","up"],MS=M.map(x=>x.slice(0,3));
+ const root=document.createElement("div");root.id="p6";root.style.display="none";
+ root.innerHTML=`<div class="mhead noprint"><div><div class="eyebrow">🍴 MID-DAY MEAL RECORD</div><h2 class="mtitle">Monthly attendance register</h2><p class="hint" style="font-size:15px;margin:4px 0 0">Enter attendance in the relevant registers. Laddoo ingredients are calculated automatically for all three groups.</p></div><span class="saved"><i></i>Saved on this device</span></div>
+<div class="cc noprint"><div class="row" style="align-items:end"><div style="grid-column:span 2"><label>School name</label><input id="${p}school"></div><div><label>Month</label><input id="${p}mi" type="month"></div><div><label>Current register</label><input value="Master Attendance · All groups" readonly></div><div><label>Norm settings</label><button id="${p}norm">⚙ Edit menu &amp; norms</button></div></div>
+<div style="margin-top:14px"><b>Roll strength</b> <span class="hint">· total attendance is split in this proportion</span><div class="row" style="margin-top:8px"><div><label>Roll strength · Shishu Batika</label><input id="${p}rsb" type="number" min="0"></div><div><label>Roll strength · Primary (1–5)</label><input id="${p}rps" type="number" min="0"></div><div><label>Roll strength · Upper Primary (6–8)</label><input id="${p}rup" type="number" min="0"></div><div><label>Total roll strength</label><input id="${p}rtot" readonly></div></div><div class="hint" id="${p}rsh" style="margin-top:6px"></div><div class="hint">Type a total in the Total column and it is divided between the three groups in proportion to their roll strength. Change any group and the total updates by itself. A group number shown in red is more than its roll strength. Type a holiday name to mark a holiday; attendance counts as 0 on every sheet.</div></div>
+<details style="margin-top:12px"><summary class="hint" style="cursor:pointer">Quick fill (optional)</summary><div class="row" style="margin-top:10px"><div><label>Shishu Batika</label><input id="${p}qs" type="number" min="0"></div><div><label>Primary</label><input id="${p}qp" type="number" min="0"></div><div><label>Upper Primary</label><input id="${p}qu" type="number" min="0"></div><div><button class="upd" id="${p}fill">Fill blank Mon–Sat days</button></div></div><div class="hint">Fills only empty cells on Monday to Saturday. Enter 0 for a holiday or a day with no meal.</div></details></div>
+<div class="sgrid noprint"><div class="sc"><span>Shishu Batika total</span><b id="${p}s1"></b><span>Monthly attendance</span></div><div class="sc"><span>Primary total</span><b id="${p}s2"></b><span>Monthly attendance</span></div><div class="sc"><span>Upper Primary total</span><b id="${p}s3"></b><span>Monthly attendance</span></div><div class="sc tint"><span>Combined total</span><b id="${p}s4"></b><span>Feeds Sheets 1–4 automatically</span></div></div>
+<div class="card reg mreg"><div class="mtop"><div><h2 id="${p}sn"></h2><p class="hint" id="${p}sd" style="margin:2px 0 0"></p></div><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap"><button id="${p}clr">↺ Clear month</button><button id="${p}xx">⬇ Export Excel</button><button id="${p}xp">⬇ Export PDF</button><button class="pri" onclick="window.print()">🖨 Print</button></div></div>
+<div class="wrap"><table class="mtab"><thead id="${p}h"></thead><tbody id="${p}tb"></tbody><tfoot id="${p}tf"></tfoot></table></div>
+<div class="mfoot"><span>Enter attendance once. Sheets 1, 2, 3 and 4 read these same saved attendance values automatically.</span><span>Rice received and opening stock remain editable in Sheet 4.</span></div></div>
+<p class="hint noprint" id="${p}ft" style="margin:8px 4px"></p>`;
+ document.querySelector("main").appendChild(root);
+ E("mi").value=iso(t).slice(0,7);E("school").value=S.school;
+ st.ratio=st.ratio||{sb:100,ps:100,up:100};
+ const showRoll=()=>{const r=st.ratio,W=r.sb+r.ps+r.up,pc=k=>W?Math.round(r[k]*1000/W)/10:0,sp=splitTotal(300,[r.sb,r.ps,r.up]);E("rtot").value=W;E("rsh").textContent="Share: Shishu Batika "+pc("sb")+"% · Primary "+pc("ps")+"% · Upper Primary "+pc("up")+"%. Example: a total of 300 splits as "+sp.join(" / ")+"."};
+ ["sb","ps","up"].forEach(k=>{E("r"+k).value=st.ratio[k];E("r"+k).oninput=()=>{st.ratio[k]=+E("r"+k).value||0;save();showRoll();refresh()}});showRoll();
+ const key=()=>E("mi").value||iso(t).slice(0,7),ym=()=>key().split("-").map(Number),dim=()=>{const[y,m]=ym();return new Date(y,m,0).getDate()},ds=d=>key()+"-"+String(d).padStart(2,"0"),mm=()=>st.months[key()]||(st.months[key()]={}),mname=()=>{const[y,m]=ym();return M[m-1]+" "+y};
+ const refresh=()=>{const n=dim(),T=[0,0,0];let hn=0;
+  for(let d=1;d<=n;d++){const dt=ds(d),e=mm()[dt]||{},hol=!!e.h,any=!hol&&F.some(f=>nz(e[f]));if(hol)hn++;else F.forEach((f,i)=>T[i]+=nz(e[f])?+e[f]:0);const ti=$(p+dt+"|t");if(document.activeElement!==ti)ti.value=any?F.reduce((a,f)=>a+(nz(e[f])?+e[f]:0),0):"";F.forEach(k=>{const c=E("tb").querySelector('input[data-d="'+dt+'"][data-f="'+k+'"]');if(c)c.classList.toggle("over",!hol&&nz(e[k])&&st.ratio[k]>0&&+e[k]>st.ratio[k])})}
+  E("tf").innerHTML=`<tr><td colspan=2>MONTH TOTAL</td><td>${T[0]}</td><td>${T[1]}</td><td>${T[2]}</td><td>${T[0]+T[1]+T[2]}</td><td>${hn?hn+" holiday"+(hn>1?"s":""):""}</td></tr>`;
+  E("s1").textContent=T[0];E("s2").textContent=T[1];E("s3").textContent=T[2];E("s4").textContent=T[0]+T[1]+T[2];
+  E("sn").textContent=S.school.toUpperCase();E("sd").textContent=mname()+" · Master Attendance · Enter each group once here";E("ft").textContent="MDM Monthly Register · "+mname();
+  if(root.style.display!=="none"){$("sub").textContent="Master Attendance — "+mname();document.title=S.school+" – Master Attendance"}};
+ const table=()=>{const n=dim(),[,mo]=ym();
+  E("h").innerHTML="<tr><th>Date</th><th>Day</th><th>Shishu Batika<span class='lg'> Attendance</span></th><th>Primary<span class='lg'> Attendance</span></th><th>Upper Primary<span class='lg'> Attendance</span></th><th>Total<span class='lg'> Attendance</span></th><th>Holiday / Remark</th></tr>";
+  let h="";for(let d=1;d<=n;d++){const dt=ds(d),dw=new Date(dt+"T00:00").getDay(),e=mm()[dt]||{};
+   h+=`<tr class="${(dw?"":"sun")+(e.h?" holr":"")}"><td class="dc">${String(d).padStart(2,"0")+" "+MS[mo-1]}</td><td><span class="pill" data-s="${D[dw].slice(0,3)}">${D[dw]}</span></td>`+F.map(f=>`<td><input class="mi" type="number" min="0" placeholder="–" data-d="${dt}" data-f="${f}" value="${e[f]??""}"${e.h?" disabled":""}></td>`).join("")+`<td><input class="mi" type="number" min="0" placeholder="–" data-d="${dt}" data-f="t" id="${p}${dt}|t"${e.h?" disabled":""}></td><td><input class="mh" type="text" placeholder="Holiday name" data-d="${dt}" data-f="h" value="${esc(e.h||"")}"></td></tr>`}
+  E("tb").innerHTML=h;refresh()};
+ E("tb").oninput=e=>{const i=e.target,f=i.dataset.f,d=i.dataset.d;if(!f)return;const m=mm(),r=m[d]=m[d]||{};
+ if(f==="h"){const v=i.value.trim();if(v)r.h=v;else delete r.h;const tr=i.closest("tr");tr.classList.toggle("holr",!!v);tr.querySelectorAll("input.mi").forEach(x=>x.disabled=!!v)}
+ else if(f==="t"){if(i.value===""){F.forEach(k=>delete r[k])}else{const sp=splitTotal(Math.max(0,Math.floor(+i.value)),[st.ratio.sb,st.ratio.ps,st.ratio.up]);F.forEach((k,j)=>r[k]=String(sp[j]))}
+  F.forEach(k=>{const c=E("tb").querySelector('input[data-d="'+d+'"][data-f="'+k+'"]');if(c)c.value=r[k]??""})}
+ else{if(i.value==="")delete r[f];else r[f]=i.value}
+ if(!Object.keys(r).length)delete m[d];save();refresh()};
+ E("fill").onclick=()=>{const v=[E("qs").value,E("qp").value,E("qu").value],m=mm();let c=0;
+  for(let d=1;d<=dim();d++){const dt=ds(d);if(new Date(dt+"T00:00").getDay()===0)continue;F.forEach((f,i)=>{if(v[i]!==""){const r=m[dt]=m[dt]||{};if(!r.h&&!nz(r[f])){r[f]=v[i];c++}}})}
+  if(!c)note("Nothing to fill. Enter at least one quick fill value; only empty Mon–Sat cells are filled.");save();table()};
+ E("clr").onclick=async()=>{if(await ask("Clear all master attendance for "+mname()+"? This cannot be undone.","Yes, clear month")){delete st.months[key()];save();table()}};
+ const ex=k=>doExport(k,{school:S.school,title:"Master Attendance — "+mname(),by:BY(),sheet:mname()},tableData(E("tb").closest("table")),fname("Master Attendance "+mname()));
+ E("xx").onclick=()=>ex("xlsx");E("xp").onclick=()=>ex("pdf");
+ E("norm").onclick=()=>tab(5);
+ E("mi").onchange=E("mi").oninput=()=>{if(E("mi").value)table()};
+ E("school").oninput=()=>{S.school=E("school").value;$("school").value=S.school;$("sch").textContent=S.school;save();refresh()};
+ return{table:()=>{E("school").value=S.school;table()}}};
+function riceMonth(k){const m=S.months[k]||{opening:0,entries:[]},rt=rates(),[y,mo]=k.split("-").map(Number),n=new Date(y,mo,0).getDate();let c=0,rcv=0;
+ for(let d=1;d<=n;d++){const dt=k+"-"+String(d).padStart(2,"0"),e=(m.entries||[]).find(x=>x.date===dt),L=link(dt),w=new Date(dt+"T00:00").getDay(),
+  sb=L?L.sb:(e?+e.sb:0),pr=L?L.pr:(e?+e.pr:0),up=L?L.up:(e?+e.up:0),
+  esb=L&&!S.p.menu[w].rice?0:sb,epr=L&&!S.p.menu[w].rice?0:pr,eup=L&&!S.u.menu[w].rice?0:up;
+  c+=esb*rt[0]+epr*rt[1]+eup*rt[2];rcv+=e?+e.rc||0:0}
+ let o=+m.opening||0;if(S.rmode==="s"&&m.sep){o=(+m.sep.openP||0)+(+m.sep.openU||0);rcv=[...Object.values(m.sep.rcP||{}),...Object.values(m.sep.rcU||{})].reduce((a,v)=>a+(+v||0),0)}return{o,rcv,c,cl:o+rcv-c}}
+const mkAbstract=()=>{
+ const p="p7-",E=s=>$(p+s),ID=s=>p+s;
+ S.pr=S.pr||{dal:115,soya:160,oil:140,egg:7,ladoo:3.5};
+ S.pm=S.pm||{p:11.15,u:14.74};
+ S.lp=S.lp||{ragi:150,wheat:41.67,sesame:140,jaggery:45,ghee:160,gnut:150,card:1500};
+ const LI=[["ragi","Ragi flour"],["wheat","Wheat flour"],["sesame","Sesame"],["jaggery","Raw sugar"],["ghee","Refined oil"],["gnut","Groundnut"],["card","Cardamom powder"]];
+ const gi=(g,k)=>`<input type="number" step="any" data-g="${g}" data-k="${k}" value="${(g?S.u:S.p).norms[k]}">`,pi=k=>`<input type="number" step="any" data-pr="${k}" value="${S.pr[k]}">`,cc=(g,k)=>`<span id="${ID("cc-"+g+"-"+k)}"></span>`;
+ const rowA=(lb,k,un,pk)=>`<tr><td class="k">${lb}</td><td class="b">${gi(0,k)} ${un}</td><td class="b">${cc(0,k)}</td><td class="b">${pk?pi(pk):""}</td><td class="g">${gi(1,k)} ${un}</td><td class="g">${cc(1,k)}</td><td class="g">${pk?pi(pk):""}</td></tr>`;
+ const root=document.createElement("div");root.id="p7";root.style.display="none";
+ root.innerHTML=`<div class="mhead noprint"><div><div class="eyebrow">📋 MONTHLY ABSTRACT</div><h2 class="mtitle">Abstract consumption sheet</h2><p class="hint" style="font-size:15px;margin:4px 0 0">Item-wise monthly consumption and amount, calculated from Sheets 1 to 4.</p></div></div>
+<div class="cc noprint"><div class="row" style="align-items:end"><div><label>Month</label><input id="${ID("mi")}" type="month"></div><div><label>Norm settings</label><button id="${ID("tg")}">⚙ Set norms &amp; prices</button></div></div></div>
+<div id="${ID("set")}" class="noprint" style="display:none">
+<div class="cc"><h2 style="margin:0 0 10px">Per meal cost</h2><div class="wrap"><table class="scr2" style="min-width:420px"><thead><tr><th>Item</th><th>Amount (₹)</th></tr></thead><tbody>
+<tr><td class="k2">Per meal cost · SB + Primary (per child)</td><td><input type="number" step="any" data-pm="p" value="${S.pm.p}"></td></tr>
+<tr><td class="k2">Per meal cost · Upper Primary (per child)</td><td><input type="number" step="any" data-pm="u" value="${S.pm.u}"></td></tr>
+<tr><td class="k2">Per laddoo cost</td><td><input type="number" step="any" data-pr="ladoo" value="${S.pr.ladoo}"> <button class="lnk" id="${ID("use")}">Use ingredient total</button></td></tr></tbody></table></div>
+<p class="hint" id="${ID("pmn")}" style="margin-top:10px"></p></div>
+<div class="cc"><h2 style="margin:0 0 10px">Norms and price per kg</h2><div class="wrap"><table class="scr"><thead><tr><th>Item</th><th>SB + Primary</th><th>Ration for PS<br>(₹ per child)</th><th>Price per kg (₹)</th><th>Upper Primary</th><th>Ration for UPS<br>(₹ per child)</th><th>Price per kg (₹)</th></tr></thead><tbody>
+${rowA("Rice","rice","gm")}${rowA("Dal","dal","gm","dal")}${rowA("Soya","soya","gm","soya")}${rowA("Oil","oil","ml","oil")}
+<tr><td class="k">Vegetables</td><td class="b">${gi(0,"veg")} gm</td><td class="b">auto adjust</td><td class="b">auto adjust</td><td class="g">${gi(1,"veg")} gm</td><td class="g">auto adjust</td><td class="g">auto adjust</td></tr>
+${rowA("Egg","egg","","egg")}${rowA("Laddoo","ladoo","","ladoo")}${rowA("Fuel (₹/child)","fuel","")}${rowA("Salt &amp; condiment (₹/child)","cond","")}</tbody></table></div>
+<p class="hint" id="${ID("note")}" style="margin-top:10px"></p></div>
+<div class="cc"><h2 style="margin:0 0 10px">Millet laddoo ingredients</h2><div class="wrap"><table class="scr2"><thead><tr><th>Item</th><th>Amount in gram</th><th>Tentative cost<br>(₹ per laddoo)</th><th>Price per kg (₹)</th></tr></thead><tbody>
+${LI.map(x=>`<tr><td class="k2">${x[1]}</td><td><input type="number" step="any" data-ln="${x[0]}" value="${S.l.norms[x[0]]}"></td><td><span id="${ID("lc-"+x[0])}"></span></td><td><input type="number" step="any" data-lp="${x[0]}" value="${S.lp[x[0]]}"></td></tr>`).join("")}
+<tr><td class="k2">Preparation cost</td><td></td><td><input type="number" step="any" data-ln="cost" value="${S.l.norms.cost}"></td><td></td></tr></tbody></table></div>
+<div class="band" id="${ID("lt")}"></div></div></div>
+<div class="sgrid noprint"><div class="sc"><span>Meals served · SB + Primary</span><b id="${ID("s1")}"></b><span>Sheet 1</span></div><div class="sc"><span>Meals served · Upper Primary</span><b id="${ID("s2")}"></b><span>Sheet 2</span></div><div class="sc"><span>Total meals</span><b id="${ID("s3")}"></b><span>All groups</span></div><div class="sc tint"><span>Total amount (₹)</span><b id="${ID("s4")}"></b><span>All items, vegetables auto-adjusted</span></div></div>
+<div class="card reg mreg"><div class="mtop"><div><h2 id="${ID("sn")}"></h2><p class="hint" id="${ID("sd")}" style="margin:2px 0 0"></p></div><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap"><button id="${ID("xx")}">⬇ Export Excel</button><button id="${ID("xp")}">⬇ Export PDF</button><button class="pri" onclick="window.print()">🖨 Print</button></div></div>
+<div class="wrap"><table class="mtab"><thead id="${ID("h")}"></thead><tbody id="${ID("tb")}"></tbody></table></div>
+<div class="mfoot"><span>Quantities come from attendance, norms and weekly menus on Sheets 1 to 4. Amount = quantity × price per kg; vegetables take whatever is left of the per-child daily amount.</span></div></div>
+<div class="card reg mreg"><div class="mtop"><div><h2>Egg consumption statement</h2><p class="hint" id="${ID("ed")}" style="margin:2px 0 0"></p></div><div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap"><button id="${ID("ex")}">⬇ Export Excel</button><button id="${ID("ep")}">⬇ Export PDF</button></div></div>
+<div class="wrap"><table class="mtab"><thead><tr><th>Date</th><th>Day</th><th>SB + Primary (eggs)</th><th>Upper Primary (eggs)</th><th>Total eggs</th><th>Amount (₹)</th></tr></thead><tbody id="${ID("eb")}"></tbody><tfoot id="${ID("ef")}"></tfoot></table></div></div>`;
+ document.querySelector("main").appendChild(root);
+ E("mi").value=iso(t).slice(0,7);
+ const key=()=>E("mi").value||iso(t).slice(0,7),mname=()=>{const[y,m]=key().split("-").map(Number);return M[m-1]+" "+y};
+ const f=(v,d)=>(+v).toFixed(d),ladooCost=()=>LI.reduce((a,x)=>a+S.l.norms[x[0]]*S.lp[x[0]]/1000,0)+(+S.l.norms.cost||0);
+ const upd=()=>{const k=key(),P=PG[2].tot(k),U=PG[3].tot(k),L=PG[4].tot(k),R=riceMonth(k),pr=S.pr;
+  const amt=(T)=>{const a={dal:T.dal*pr.dal,soya:T.soya*pr.soya,oil:T.oil*pr.oil,egg:T.egg*pr.egg,ladoo:T.ladoo*pr.ladoo,fuel:T.fuel,cond:T.cond};const o=a.dal+a.soya+a.oil+a.egg+a.ladoo+a.fuel+a.cond;a.veg=T.budget?T.budget-o:0;a.tot=o+a.veg;return a},aP=amt(P),aU=amt(U);
+  [0,1].forEach(g=>{const n=(g?S.u:S.p).norms;E("cc-"+g+"-rice").textContent="FREE";["dal","soya","oil"].forEach(x=>E("cc-"+g+"-"+x).textContent=f(n[x]*pr[x]/1000,2));["egg","ladoo"].forEach(x=>E("cc-"+g+"-"+x).textContent=f(n[x]*pr[x],2));E("cc-"+g+"-fuel").textContent=f(n.fuel,2);E("cc-"+g+"-cond").textContent=f(n.cond,2)});
+  let lsum=0;LI.forEach(x=>{const c=S.l.norms[x[0]]*S.lp[x[0]]/1000;lsum+=c;E("lc-"+x[0]).textContent=f(c,2)});
+  E("lt").textContent="PER LADDOO COST IS "+f(lsum+S.l.norms.cost,2)+" INCLUDING PREPARATION COST";
+  const rr=[1,2,3,4,5,6].map(w=>S.c.rates[w]),rg=g=>{const v=rr.map(x=>x[g]);return "₹"+f(Math.min(...v),2)+" – ₹"+f(Math.max(...v),2)};
+  const pmv=g=>+S.pm[g?"u":"p"]?"₹"+f(+S.pm[g?"u":"p"],2):rg(g);E("note").textContent="Per child per meal: SB + Primary "+pmv(0)+", Upper Primary "+pmv(1)+". Vegetables auto-adjust to whatever is left of that amount.";E("pmn").textContent="Vegetables = per meal cost − dal − soya − oil − egg − laddoo − fuel − condiment. Clear a per meal cost box to use the weekday-wise rates from Sheet 5 instead. Ingredient-based laddoo cost: ₹"+f(ladooCost(),2)+".";
+  const row=(n,u,pq,pa,uq,ua,d,fr)=>`<tr><td class="il">${n}</td><td>${u}</td><td>${pq==null?"":f(pq,d)}</td><td>${pa==null?"":f(pa,2)}</td><td>${uq==null?"":f(uq,d)}</td><td>${ua==null?"":f(ua,2)}</td><td><b>${pq==null?"":f(pq+uq,d)}</b></td><td><b>${fr?"Free":(pa==null?"":f(pa+ua,2))}</b></td></tr>`;
+  const one=(n,u,q,a,d)=>`<tr><td class="il">${n}</td><td>${u}</td><td></td><td></td><td></td><td></td><td><b>${q==null?"":f(q,d)}</b></td><td><b>${a==null?"":f(a,2)}</b></td></tr>`;
+  const sec=x=>`<tr class="sec"><td colspan="8">${x}</td></tr>`;
+  E("h").innerHTML="<tr><th>Item</th><th>Unit</th><th>SB + Primary Qty</th><th>SB + Primary Amount (₹)</th><th>Upper Primary Qty</th><th>Upper Primary Amount (₹)</th><th>Total Qty</th><th>Total Amount (₹)</th></tr>";
+  const lq=L.ragi,lam=LI.reduce((a,x)=>a+L[x[0]]*S.lp[x[0]],0);
+  E("tb").innerHTML=sec("A. Daily meal items (Sheet 1 and Sheet 2)")+row("Meals served","nos",P.m,null,U.m,null,0)+row("Rice","kg",P.rice,0,U.rice,0,3,1)+row("Dal","kg",P.dal,aP.dal,U.dal,aU.dal,3)+row("Soya chunks","kg",P.soya,aP.soya,U.soya,aU.soya,3)+row("Oil","kg",P.oil,aP.oil,U.oil,aU.oil,3)+row("Vegetables (auto adjust)","kg",P.veg,aP.veg,U.veg,aU.veg,3)+row("Egg","pieces",P.egg,aP.egg,U.egg,aU.egg,0)+row("Laddoo","pieces",P.ladoo,aP.ladoo,U.ladoo,aU.ladoo,0)+row("Fuel","₹",null,aP.fuel,null,aU.fuel,0)+row("Salt & condiment","₹",null,aP.cond,null,aU.cond,0)
+   +`<tr class="tot"><td class="il" colspan="2">TOTAL AMOUNT</td><td></td><td>${f(aP.tot,2)}</td><td></td><td>${f(aU.tot,2)}</td><td></td><td>${f(aP.tot+aU.tot,2)}</td></tr>`
+   +sec("B. Millet laddoo ingredients (Sheet 3)")+one("Laddoos prepared","pieces",L.q,L.q*pr.ladoo,0)+LI.map(x=>one(x[1],"kg",L[x[0]],L[x[0]]*S.lp[x[0]],3)).join("")+one("Preparation cost","₹",null,L.cost,0)+one("Total laddoo cost (ingredients + preparation)","₹",null,lam+L.cost,0)
+   +sec("C. Rice stock (Sheet 4)")+one("Opening stock","kg",R.o,null,3)+one("Rice received","kg",R.rcv,null,3)+one("Rice consumed","kg",R.c,null,3)+one("Closing balance","kg",R.cl,null,3);
+  E("s1").textContent=P.m;E("s2").textContent=U.m;E("s3").textContent=P.m+U.m;E("s4").textContent=f(aP.tot+aU.tot,2);
+  E("sn").textContent=S.school.toUpperCase();E("sd").textContent=mname()+" · Abstract consumption · Item-wise monthly";
+  const ep=PG[2].rows(k),eu=PG[3].rows(k);let tp=0,tu=0,eh="";
+  ep.forEach((x,i)=>{const a=x.r.egg,b=eu[i].r.egg;if(a+b>0){tp+=a;tu+=b;eh+=`<tr><td class="dc">${fd(x.dt)}</td><td><span class="pill" data-s="${D[x.w].slice(0,3)}">${D[x.w]}</span></td><td>${f(a,0)}</td><td>${f(b,0)}</td><td><b>${f(a+b,0)}</b></td><td>${f((a+b)*pr.egg,2)}</td></tr>`}});
+  E("eb").innerHTML=eh||'<tr><td colspan="6" style="color:var(--mut)">No egg days with attendance in this month.</td></tr>';
+  E("ef").innerHTML=`<tr><td colspan="2">TOTAL</td><td>${f(tp,0)}</td><td>${f(tu,0)}</td><td>${f(tp+tu,0)}</td><td>${f((tp+tu)*pr.egg,2)}</td></tr>`;
+  E("ed").textContent=mname()+" · Date, day and number of eggs · ₹"+f(pr.egg,2)+" per egg";
+  if(root.style.display!=="none"){$("sub").textContent="Abstract Consumption — "+mname();document.title=S.school+" – Abstract Consumption"}};
+ root.addEventListener("input",e=>{const i=e.target,d=i.dataset,v=+i.value||0;
+  if(d.g!=null)(d.g==="1"?S.u:S.p).norms[d.k]=v;
+  else if(d.pr)S.pr[d.pr]=v,root.querySelectorAll('[data-pr="'+d.pr+'"]').forEach(x=>{if(x!==i)x.value=i.value});
+  else if(d.pm)S.pm[d.pm]=v;else if(d.ln)S.l.norms[d.ln]=v;else if(d.lp)S.lp[d.lp]=v;else return;
+  save();upd()});
+ E("use").onclick=()=>{S.pr.ladoo=+ladooCost().toFixed(2);root.querySelectorAll('[data-pr="ladoo"]').forEach(x=>x.value=S.pr.ladoo);save();upd()};
+ E("tg").onclick=()=>{const s=E("set").style,h=s.display==="none";s.display=h?"":"none";E("tg").textContent=h?"⚙ Hide norms & prices":"⚙ Set norms & prices"};
+ const ex=(k,id,ttl)=>doExport(k,{school:S.school,title:ttl+" — "+mname(),by:BY(),sheet:mname()},tableData(E(id).closest("table")),fname(ttl+" "+mname()));
+ E("xx").onclick=()=>ex("xlsx","tb","Abstract Consumption");E("xp").onclick=()=>ex("pdf","tb","Abstract Consumption");
+ E("ex").onclick=()=>ex("xlsx","eb","Egg Consumption");E("ep").onclick=()=>ex("pdf","eb","Egg Consumption");
+ E("mi").onchange=E("mi").oninput=()=>{if(E("mi").value)upd()};
+ return{table:upd}};
+PG[5]=mkCalc();PG[6]=mkMaster();PG[7]=mkAbstract();
+function tab(n){["p1","p2","p3","p4","p5","p6","p7"].forEach((x,i)=>{$(x).style.display=i+1==n?"":"none";$("t"+(i+1)).classList.toggle("on",i+1==n)});n==1?render():PG[n].table();try{$("t"+n).scrollIntoView({inline:"center",block:"nearest"})}catch(e){}}
+[1,2,3,4,5,6,7].forEach(n=>$("t"+n).onclick=()=>tab(n));
+/* ---- Export PDF / Excel ---- */
+const num=t=>/^-?\d+(\.\d+)?$/.test(t)?+t:t;
+const BY=()=>document.querySelector(".by").textContent;
+function xlsxBlob(meta,d){const aoa=[[meta.school],[meta.title],[meta.by],[]];
+ const push=r=>{const a=[];r.forEach(c=>{a.push(num(c.t));for(let i=1;i<c.cs;i++)a.push("")});aoa.push(a)};
+ d.head.forEach(push);d.body.forEach(push);d.foot.forEach(push);
+ const ws=XLSX.utils.aoa_to_sheet(aoa),body=aoa.slice(4);
+ ws["!cols"]=(body[0]||[]).map((_,i)=>({wch:Math.min(30,Math.max(8,...body.map(r=>String(r[i]??"").length)))}));
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,meta.sheet.slice(0,31));
+ return new Blob([XLSX.write(wb,{type:"array",bookType:"xlsx"})],{type:"application/octet-stream"})}
+function pdfBlob(meta,d){const {jsPDF}=window.jspdf,X=s=>String(s).replace(/₹/g,"Rs."),m=r=>r.map(c=>({content:X(c.t),colSpan:c.cs}));
+ const build=fs=>{const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  doc.setFont("helvetica","bold");doc.setFontSize(13);doc.text(X(meta.school),105,9,{align:"center"});
+  doc.setFontSize(10.5);doc.text(X(meta.title),105,15,{align:"center"});
+  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(X(meta.by),105,20,{align:"center"});
+  doc.autoTable({head:d.head.map(m),body:d.body.map(m),foot:d.foot.map(m),startY:23,margin:{left:6,right:6,top:6,bottom:6},theme:"grid",
+   styles:{fontSize:fs,cellPadding:Math.max(.5,fs*.15),lineColor:[11,74,49],lineWidth:.25,halign:meta.left?"left":"right",textColor:20,overflow:"linebreak"},
+   headStyles:{fillColor:[14,90,60],textColor:255,halign:"center",valign:"middle"},
+   footStyles:{fillColor:[215,238,226],textColor:0,fontStyle:"bold"},
+   columnStyles:{0:{halign:"left"},1:{halign:"left"}},showFoot:"lastPage"});
+  return doc};
+ let doc;for(const fs of [10,9,8.5,8,7.5,7,6.5,6,5.5,5,4.5,4]){doc=build(fs);if(doc.internal.getNumberOfPages()===1)break}
+ return doc.output("blob")}
+async function saveFile(name,blob){
+ try{const dl=window.claude&&claude.use?await claude.use("downloads"):null;
+  if(dl){await dl.save({filename:name,data:blob});return}
+ }catch(e){if(e&&e.code==="declined")return;note("Could not save the file: "+(e&&e.message||e));return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+async function doExport(k,meta,d,file){
+ try{if(k==="pdf"){if(!(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable)){note("The PDF library did not load. Check your internet connection and try again.");return}await saveFile(file+".pdf",pdfBlob(meta,d))}
+ else{if(!window.XLSX){note("The Excel library did not load. Check your internet connection and try again.");return}await saveFile(file+".xlsx",xlsxBlob(meta,d))}}
+ catch(e){note("Export failed: "+(e&&e.message||e))}}
+const fname=s=>s.replace(/[^\w\- ()]+/g,"").trim().replace(/\s+/g,"_");
+const tableData=el=>{const rd=tr=>[...tr.cells].filter(c=>!c.classList.contains("noprint")).map(c=>{const i=c.querySelector("input"),k=c.cloneNode(true);k.querySelectorAll("small").forEach(x=>x.remove());return{t:(i?i.value:k.textContent).replace(/\s+/g," ").trim(),cs:c.colSpan||1}});
+ const g=s=>[...el.querySelectorAll(s+" tr")].map(rd);return{head:g("thead"),body:g("tbody").filter(r=>!(r.length==1&&/No entries/.test(r[0].t))),foot:g("tfoot")}};
+const EXL={p1:"Rice Stock Register",p2:"Primary MDM Register",p3:"Upper Primary MDM Register",p4:"Millet Ladoo (Primary) Register",p6:"Master Attendance"};
+document.querySelectorAll("#reg .top, .reg.card .top").forEach(top=>{
+ const pg=top.closest("#p1,#p2,#p3,#p4,#p6"),label=top.dataset.label||EXL[pg.id],pr=top.querySelector("button"),w=document.createElement("span");
+ w.className="noprint";w.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
+ w.innerHTML='<button data-k="pdf">⬇ Export PDF</button><button data-k="xlsx">⬇ Export Excel</button>';w.appendChild(pr);top.appendChild(w);
+ w.onclick=e=>{const k=e.target.dataset.k;if(!k)return;const mon=top.querySelector("h2").textContent.replace(/^Monthly register\s*—\s*/,"");
+  doExport(k,{school:S.school,title:label+" — "+mon,by:BY(),sheet:mon},tableData(top.parentElement.querySelector("table")),fname(label+" "+mon))}});
+{const row=$("c-clr").parentElement,w=document.createElement("span");w.style.cssText="display:contents";
+ w.innerHTML='<button data-k="pdf">⬇ Export PDF</button><button data-k="xlsx">⬇ Export Excel</button>';row.insertBefore(w,row.lastElementChild);
+ w.onclick=e=>{const k=e.target.dataset.k;if(!k)return;const c=t=>({t:String(t).replace(/\s+/g," ").trim(),cs:1}),dt=$("c-dt").value||iso(t),rows=[[c("Meal date"),c(fd(dt)),c("")],[c("Day"),c($("c-h").textContent.replace("Daily requirement — ","")),c("")]];
+  [...$("c-cnt").children].forEach(x=>rows.push([c(x.querySelector(".tag").textContent+" – "+x.querySelector("h3").textContent),c(x.querySelector("input").value||0),c("children")]));
+  rows.push([c("Total children"),c($("c-tot").textContent),c("")]);
+  [...$("c-res").children].forEach(x=>{const sm=x.querySelectorAll("small"),st=x.querySelector("strong");rows.push([c(sm[0].textContent),c(st?st.textContent:"—"),c(st&&sm[1]?sm[1].textContent:"")])});
+  rows.push([c("Estimated cooking cost (₹)"),c($("c-cost").textContent),c($("c-rt").textContent)]);
+  doExport(k,{school:S.school,title:"MDM Calculator — Daily report "+fd(dt),by:BY(),sheet:"Daily report",left:true},{head:[[c("Item"),c("Quantity"),c("Details")]],body:rows,foot:[]},fname("MDM Daily Report "+fd(dt)))}}
+render();tab(6);
+</script></body></html>
